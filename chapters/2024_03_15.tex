@@ -1,0 +1,112 @@
+\chapter[The 15$^{\text{th}}$ of March 2024]{2D and efficiency investigations}
+\begin{chapabstract}
+    This week the 2D has drastically moved forward and some investigations on the efficiency of the parametric investigation were made.
+\end{chapabstract}
+
+\minitoc
+
+\section{2D}
+
+\begin{itemize}
+    \item Reference elements are implemented for T3 element
+    \item Boundary conditions are implemented and automated
+    \begin{itemize}
+        \item Small strain only, no normal vector computation yet
+    \end{itemize}
+\end{itemize}
+
+
+
+\section{Parametric efficiency}
+
+\subsection{Efficiency findings}
+When the number of parameters increases the cost drastically increases and I do not know why. 
+
+
+\subsection{Different implementation strategies}
+Basically the parameters and the modes are handled as a list of Modules (functions) that are indexed by the mode number and the parameter number. Each function within the list is well vectorised.
+
+
+\paragraph{The first non optimal idea is to use for loops}
+
+Two nested loops to iterate through the functions stored in \code{self.Para\_modes}.
+\RestyleAlgo{ruled}
+
+%% This is needed if you want to add comments in
+%% your algorithm with \Comment
+\SetKwComment{Comment}{/* }{ */}
+\SetEndCharOfAlgoLine{}
+\begin{algorithm}[hbtp!]
+	\caption{Parameter modes evaluation}\label{alg:two}
+	\textbf{Inputs: } \code{Para\_mode\_Lists}, \code{mu} \textcolor{GreenLMS}{\Comment*[r]{List of Modules and parameters samples mu}}
+	
+	\For(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Loop over the modes\hspace{-6pt}}}){$k \in \llbracket 1,m \rrbracket$}{
+
+	\For(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Loop over the parameters\hspace{-6pt}}}){$k \in \llbracket 1,\beta \rrbracket$}{
+            \code{Para\_mode\_Lists[mode][l] = self.Para\_modes[mode][l](mu[l]) 
+            }
+    }
+    }
+\end{algorithm}
+
+\paragraph{List comprehension}
+
+The for loops can easily be converted to list comprehension.
+
+\begin{algorithm}[hbtp!]
+	\caption{Parameter modes evaluation}\label{alg:two}
+	\textbf{Inputs: } \code{Para\_mode\_Lists}, \code{mu} \textcolor{GreenLMS}{\Comment*[r]{List of Modules and parameters samples mu}}
+	
+\code{Para\_mode\_Lists = [[self.Para\_modes[mode][p](mu[p])} 
+\code{for p in range(self.n\_para)]for mode in range(self.n\_modes)]}
+\end{algorithm}
+
+No speed-up is observed. The \code{ModuleList} offers the same syntax as python lists but the implementation might differ.
+
+\paragraph{Vectorisation over the indexes} Because the output of each functions in \code{ModuleList} are independent from one-another it would be perfectly possible to run their evaluation in parallel. To that aim several vectorisation implementation where tried with little to no success.
+
+\begin{itemize}
+    \item Slicing does not work on Module or function lists
+    \item There's no way to vmap directly over an array of functions \href{https://github.com/google/jax/issues/673}{see this topic}
+    \item There is a workaround using switch (not implemented in \textsc{pytorch} yet but works with jax)
+\end{itemize}
+
+I tried the workaround proposed \href{https://github.com/google/jax/issues/673}{here} using jax to compare the speed up results and.... it was way worse (10x slower than using for loops).
+
+I tried \code{jax.jit} over the vmaped function and it was even worse (100x slower than using for loops)
+
+\Rq{Those findings might be linked to early versions of jax not being well optimised for M2 chips yet}
+
+
+\paragraph{Results:}
+On a simpler example the evaluation of the above mentioned methods was tried and yield the conclusion that on our hardware the list comprehension might be the best way to go.
+\begin{verbatim}
+**** Example 1 ****
+For loop:               t = 1.180887222290039ms
+List comprehension:     t = 1.0099411010742188ms
+vmap:                   t = 100.78692436218262ms
+\end{verbatim}
+
+
+\paragraph{Investigation on why it is so slow}
+
+with one parameter the complexity seems to be O(m) which sounds reasonable.
+
+If I fix $m=1$ and go from $1$ parameter to $2$, the running time per epoch increases by a factor $5$.
+
+\Rqs{It might be due to the loss implementation that somehow brings back the curse of dimensionality. It does not seem easy to remove the full tensors field evaluation to compute the integral due to the square of the gradient $$\left( \frac{\partial u}{\partial x} \right)^2 = \left( \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{\frac{\mathrm{d}\overline{\vect{u}}_i(\vect{x}) }{\mathrm{d}x}} ~\textcolor{LGreenLMS}{\prod_{j=1}^{\beta}\lambda_i^j(\mu^j)} \right)^2$$}{Try to rely on  the orthogonality of the space modes (which we do not have currently but could be post-processed with GS or constrained )}
+
+\subsection{TODO}
+\begin{itemize}
+    \item Greedy algorithm (based on mixed formulation error indicator)
+    \item \textbf{Learn the number of modes with a sparsity constraint}
+    \begin{itemize}
+        \item Start with a fixed weight on the sparisity constraint 
+        \item decrease the weight imposing sparsity if convergence is too slow
+        \item Similar to update/adding modes criterion in PGD
+    \end{itemize}
+    \item Study on imposing or not orthogonality
+    \item Gram Schimdt
+    \item Non-linear interpolation using a deeper NN
+\end{itemize}
+

@@ -1,0 +1,27 @@
+\chapter[Conferences abstracts]{Conferences abstracts}
+\label{chap:conf}
+\begin{chapabstract}
+    This chapter regroups all abstracts written for conferences
+\end{chapabstract}
+
+\minitoc
+
+\section{VPH: Virtual physiological human}
+Data-Driven Simulation Technologies for Clinical Decision Making
+\begin{itemize}
+    \item 4-6 September 2024
+    \item University of Stuttgart
+\end{itemize}
+
+\subsection{Parametric paper}
+
+Stress fields possibly play a crucial role in the development of pulmonary fibrosis. This work, aims to provide clinicians with diagnostic and prognostic tools based on mechanical simulation. Personalisation of these tools is critical for clinical pertinence, thus requiring numerical techniques for real-time estimation of patient-specific mechanical parameters.
+
+This work proposes hybridising classical model-order reduction methods with machine learning capabilities to provide a fine-tuned real-time solution to the highly non-linear mechanics problem. 
+
+Analogous to techniques like the Proper Generalised Decomposition (PGD) or the Higher Order Singular Value Decomposition (HOSVD), the parametric mechanical field is represented through tensor decomposition, effectively mitigating the curse of dimensionality associated with high-dimensional parameters. Each mode of the tensor decomposition is given by the output of a sparse neural network within the HiDeNN framework, constraining the weights and biases to emulate classical shape functions used in Finite Element Method.
+
+This hybridisation preserves interpretability while affording greater flexibility than standard model-order reduction methods. For instance, it allows for employing diverse meshes for individual modes in the tensor decomposition, with the added capability of mesh evolution during the training stage. Moreover, the model's architecture results directly from the number of nodes and the order of elements used for interpolation, thus eliminating the need for arbitrariness in its choice.
+
+In this framework, the training stage amounts to solving the minimisation problem classically encountered with classical model reduction methods, but the automatic differentiation tools naturally available in the neural network framework allow greater flexibility in solving this minimisation problem when a linearisation of the problem is not straightforward. 
+Finally, this framework allows for transfer learning between different models with different architectures, leading to high efficiency in the model's design and limiting the wasteful use of resources.

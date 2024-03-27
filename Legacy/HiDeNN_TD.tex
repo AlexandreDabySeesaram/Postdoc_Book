@@ -1,0 +1,134 @@
+\documentclass{article}
+\usepackage[margin=1in,footskip=0.25in]{geometry}
+\usepackage{MyNotations}
+\author{}
+\title{HiDeNN-TD for parametrised PDEs}
+\date{}
+
+\hypersetup{
+    pdfauthor   = {Alexandre and Katka},
+    colorlinks=true,
+    citecolor=GreenLMS,
+    linkcolor=GreenLMS,
+    filecolor=GreenLMS,      
+    urlcolor=GreenLMS,
+    pdftitle={HiDeNN-ROM},
+    pdfpagemode=FullScreen,
+    }
+
+\addbibresource{biblio.bib}
+\usepackage{fourier}
+\begin{document}
+
+\maketitle
+
+\section{Reduced-Order modelling (ROM)}
+
+    Reduced-order modelling methods offer a way to escape the curse of the dimensionality. The idea is to express as a sum of product of single variables functions. Let's consider a displacement field $\vect{u}$ parameterised by the position $\vect{x}$ and a set of $\beta$ parameters $\left\{\mu_i\right\}_{i \ in \llbracket 1, \beta \rrbracket}$. It's reduced-order expression using $m$ modes reads
+    \begin{equation}
+        \vect{u}\left(\textcolor{BleuLMS!70}{\vect{x}}, \textcolor{LGreenLMS}{\left\{\mu_i\right\}_{i \ in \llbracket 1, \beta \rrbracket}}\right) = \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{\overline{\vect{u}}_i(\vect{x})} ~\textcolor{LGreenLMS}{\prod_{j=1}^{\beta}\lambda_i^j(\mu^j)}.
+    \end{equation}
+
+\section{HiDeNN-ROM}
+
+
+\begin{wrapfigure}{r}{0.45\textwidth}
+    \flushleft
+    \include{Schema/NN_TD.tex}
+    \caption{HiDeNN-TD for a single extra parameter}
+    \label{fig:HiDeNN_TD_mu}
+\end{wrapfigure}
+The aforementioned tensor decomposition can be used in the HiDeNN framework \parencite{zhang_hidenn-td_2022} using the \emph{Multiplication block} $\mathcal{M}$ detailed in \parencite{zhang_hierarchical_2021}. Such an implementation falls in the scope of \emph{a priori} reduced-order modelling \parencite{ryckelynck_thea_2006,chinesta_short_2011} as no prior knowledge is required (those method do not require off line expensive computations to build the reduced-order basis).
+
+\subsection{Single parameter}
+
+The HiDeNN framework consists in an interpolation network based, for instance, on the finite element shape functions $N$. Let's consider the following tensor decomposition.
+\begin{equation}
+    \vect{u}(\textcolor{BleuLMS!70}{\vect{x}},\textcolor{LGreenLMS}{\mu}) = \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{\overline{\vect{u}}_i(\vect{x})} ~\textcolor{LGreenLMS}{\lambda_i(\mu)}
+\end{equation}
+The HiDeNN architecture leading to such a decomposition of the interpolation is illustrated in Figure~\ref{fig:HiDeNN_TD_mu}. The \textcolor{BleuLMS!70}{blue Neural Network} allows the interpolation of the spatial modes using given finite element shape functions. The \textcolor{LGreenLMS}{green Neural Network} would probably only use 1D shape functions to interpolate scalar parameter fields. For each $i \in \llbracket 1, m \rrbracket$ mode, both element of the pair $\left(\textcolor{BleuLMS!70}{\vect{\overline{u}}_i}, \textcolor{LGreenLMS}{\lambda_i} \right)$ are multiplied with each others. the last layer sums all the products of the tensor decomposition. 
+The loss function can then later be computing using the input parameters and the output interpolation. An optimiser is then used to train the NN, \emph{i.e.} solve the optimisation problem. 
+
+Note: The top part of the NN up to $\vect{\overline{u}}_1\left(x\right)$ corresponds to a classical quasi-static HiDeNN. 
+
+
+\newpage
+\begin{wrapfigure}{r}{0.47\textwidth}
+    \flushleft
+    \include{Schema/HiDeNN_MultiP.tex}
+    \caption{HiDeNN-TD for a multiple extra parameters}
+    \label{fig:HiDeNN_TD_multipleMu}
+\end{wrapfigure}
+\subsection{Multiple parameters}
+
+Similarly, multiple parameters can be used as extra-coordinates in the tensor decomposition leading to the expression 
+    \begin{equation}
+        \vect{u}\left(\textcolor{BleuLMS!70}{\vect{x}}, \textcolor{LGreenLMS}{\left\{\mu_i\right\}_{i \ in \llbracket 1, \beta \rrbracket}}\right) = \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{\overline{\vect{u}}_i(\vect{x})} ~\textcolor{LGreenLMS}{\prod_{j=1}^{\beta}\lambda_i^j(\mu^j)}.
+    \end{equation}
+
+The architecture presented in Figure~\ref{fig:HiDeNN_TD_mu} can be extended by adding several interpolation blocks to account for the several parameters in the tensor decomposition. An example of such a decomposition if given in Figure~\ref{fig:HiDeNN_TD_multipleMu}.
+
+\subsubsection{Spatial parameter field}
+
+In the medical context of interest, not all parameters are scalars; some are spatial fields. For those parameters, a specific representation is required in order for those to fit in the HiDeNN framework which is mesh-less in the sens that the input are coordinates without any given discretisation. 
+
+The idea is to project a given spatial field $\mu\left(x\right)$ onto a suitable basis $\left\{f_k\right\}_{k \ in \llbracket 1, \beta \rrbracket}$ such that 
+\begin{equation}
+    \mu\left(x\right) = \sum\limits_{k=1}^{\beta}\mu^{k}f^k\left(x\right).
+\end{equation}
+
+This projection gives a set of ``patient specific'' parameters $\textcolor{LGreenLMS}{\left\{\mu^k\right\}_{k \in \llbracket 1, \beta \rrbracket}}$ that can be fed in the NN. The field $\mu\left(x\right)$ is reconstructed to compute the loss 
+\begin{equation}
+\mathcal{L} = g\left(\vect{u}\left((\textcolor{BleuLMS!70}{\vect{x}},\textcolor{LGreenLMS}{\left\{\mu^k\right\}}\right),\textcolor{BleuLMS!70}{\vect{x}},\mu\left(x\right)\right)
+\end{equation}
+as a function $g$ of quantities of interest.
+
+\subsection{Perspectives \& open questions}
+
+This framework has only been used in the context of spatial coordinates (space-separated TD) for linear equations (with a maximum of 3 parameters). 
+
+\begin{itemize}
+    \item Large number of parameters
+    \item Extra-coordinates (parameters other than spatial coordinates)
+    \item Spatial parameter fields
+    \item Time PDE's 
+    \item PGD \faChevronRight Adapt on the fly the number of modes
+    \item Compare to PGD on simple equations ?
+    \begin{itemize}
+        \item Modes are computed without fixed-point algo
+        \item Better behaviour in high dimensions is expected
+    \end{itemize}
+    \item Add a layer of pre-processing of the $\mu$'s ?
+    \begin{itemize}
+        \item Scaling, etc.
+    \end{itemize}
+    \item[\textcolor{RougeLMS}{\faLock}] This implementation does not allow for mesh to be a function of the parameters
+    \item[\textcolor{LGreenLMS}{\faCheckCircle }] Does not rely on a prior discretisation of the parameters (Thanks to the continuous interpolation given by the shape functions)
+\end{itemize}
+
+
+
+\section{Element wise architecture}
+
+When moving from linear 1D elements to higher order or dimensions, the use of an element wise architecture appears more versatile. The shape functions are therefore built on each element as opposed to globally on the mesh. 
+
+One way of combining those approaches would be to add an \emph{Assembly layer} layer before the interpolation layer that rebuilds the global shape functions at the structure's (mesh) scale.
+
+For each element, a sub-neural network would be built so that the output consists on the local shape functions $\Tilde{N}_i$ defined on the element. 
+
+\underline{Important:} at this point, several versions of the same shape function (associated to the same node) can exist independently through different elements.
+
+The \emph{Assembly layer} layer would then reconnect every local version $\Tilde{N}_i$ of a given global shape function $N_i$ associated to the $i-\text{th}$ node of the mesh. This layer would be a linear layer (without bias) that inputs all the $\Tilde{N}_i$ and outputs a smaller layer of the $N_i$.
+The weight matrix of such a layer would read
+\begin{equation}
+    w_{i,d\left(e-1\right)+k} = \begin{cases}
+        1,\text{ if }k-\text{th node of element }e\text{ is node }i \\
+        0,\text{ otherwise}
+    \end{cases}
+\end{equation}
+
+% \bibliographystyle{apalike} % We choose the "plain" reference style
+% \bibliography{biblio} % Entries are in the refs.bib file
+
+	\printbibliography[heading=bibintoc]
+\end{document}

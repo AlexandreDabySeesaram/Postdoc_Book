@@ -1,0 +1,70 @@
+		\centering
+		% \begin{ganttchart}[
+		% 	hgrid,
+		% 	vgrid,
+		% 	x unit=1cm,
+		% 	y unit chart=0.5cm,
+		% 	title height=1,
+		% 	title label font=\bfseries\footnotesize,
+		% 	bar/.style={draw, fill=BleuLMS},
+		% 	bar height=0.7,
+		% 	bar label font=\small,
+		% 	group right shift=0,
+		% 	group top shift=0.5,
+		% 	group height=0.3,
+		% 	group peaks width=0.2,
+		% 	inline
+		% 	]{1}{11}
+		% 	% \gantttitle{2024 Schedule}{11} \\
+		% 	\gantttitlelist{2,...,12}{1} \\
+		% 	\ganttbar[bar/.append style={fill=GreenLMS}]{\color{white}Method paper 1}{1}{5} \\
+		% 	\ganttbar{\color{white}Method paper 2}{1}{5} \\
+		% 	\ganttnewline
+		% 	\ganttmilestone{Tools}{5} \ganttnewline
+		% 	\ganttnewline
+		% 	\ganttbar{\color{white}Application paper 1}{6}{11} \\
+		% 	\ganttbar[bar/.append style={fill=GreenLMS}]{\color{white}Application paper 2}{6}{11} \\
+		% 	% \ganttgroup[group/.append style={fill=BleuLMS!20!black}]{Phase 1}{1}{5} \\
+		% 	% \ganttgroup[group/.append style={fill=BleuLMS!20!black}]{Phase 2}{6}{11} \\
+		% 	\ganttlink{elem0}{elem2}
+		% 	\ganttlink{elem1}{elem2}
+		% 	\ganttlink{elem2}{elem3}
+		% 	\ganttlink{elem2}{elem4}
+		% \end{ganttchart}
+
+\begin{ganttchart}[
+        hgrid,
+	vgrid,
+	x unit=1cm,
+	y unit chart=0.5cm,
+	today=1,
+	progress=today,
+	title height=1,
+	title label font=\bfseries\footnotesize,
+	bar/.style={draw, fill=BleuLMS!20},
+	bar incomplete/.append style={fill=BleuLMS},
+	bar height=0.7,
+	bar label font=\small,
+	group right shift=0,
+	group top shift=0.5,
+	group height=0.3,
+	group peaks width=0.2,
+	inline
+	]{1}{12}
+	% \gantttitle{2024 Schedule}{11} \\
+	\gantttitlelist{1,...,12}{1} \\
+	\ganttbar[progress label text={},bar/.append style={fill=GreenLMS!20},bar incomplete/.append style={fill=GreenLMS}]{\color{white}Method paper 1}{1}{5} \\
+	\ganttbar[progress label text={}]{\color{white}Method paper 2}{2}{5} \\
+	\ganttnewline
+	\ganttmilestone[progress label text={}]{Tools}{5} \ganttnewline
+	\ganttnewline
+	\ganttbar[progress label text={},bar/.append style={fill=GreenLMS!20},bar incomplete/.append style={fill=GreenLMS}]{\color{white}Application paper 1}{6}{12} \\
+	\ganttbar[progress label text={}]{\color{white}Application paper 2}{6}{12} \\
+	% \ganttgroup[group/.append style={fill=BleuLMS!20!black}]{Phase 1}{1}{5} \\
+	% \ganttgroup[group/.append style={fill=BleuLMS!20!black}]{Phase 2}{6}{11} \\
+	\ganttlink{elem0}{elem2}
+	\ganttlink{elem1}{elem2}
+	\ganttlink{elem2}{elem3}
+	\ganttlink{elem2}{elem4}
+\end{ganttchart}
+  

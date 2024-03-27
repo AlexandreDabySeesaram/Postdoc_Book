@@ -1,0 +1,160 @@
+\chapter[Notes to ourselves]{Notes to ourselves}
+\label{chap:Note}
+\begin{chapabstract}
+    This chapter summarises our notes and remarks as we have progressed in our understanding of the subject.
+\end{chapabstract}
+
+\minitoc
+
+\section{Implementation}
+    Many of the elementary blocks described by \cite{zhang_hierarchical_2021} can be achieved using elementary tensor algebra (addition multiplication, etc.).
+    \begin{itemize}
+        \item Using \emph{perceptron} as the sole building block for all operations as done in \parencite{zhang_hierarchical_2021} leads to a generic implementation where the gradient is always well populated.
+        \item Relying on \textsc{Pytorch} tensor operations lead to the same results but appears to be faster when available.
+        \begin{itemize}
+            \item When available, using \textsc{Pytorch} operations might be easier and, therefore, more efficient overall when implementing new features.
+        \end{itemize}
+    \end{itemize}
+
+    \subsection{Saving Models}
+
+    When the architecture is expected to change a lot saving the full model as opposed to solving the model state dictionaries makes it easier to reuse a previously saved model associated with an older architecture. 
+
+    \section{Code}
+    \subsection{Efficiency}
+    \subsubsection{Module ensembling}
+    The sub neural networks are stored in \code{ModuleList} object and are called through list comprehension.
+    \code{ModuleList} should support slicing and list comprehension might be the reason why the implementation is so slow !! \href{https://github.com/pytorch/pytorch/issues/37718}{Discussion about this subject} Model ensembling shown \href{https://pytorch.org/functorch/stable/notebooks/ensembling.html}{here} is also promissing but it seems that \href{https://pytorch.org/functorch/stable/}{functorch} is depreciated and a \href{https://pytorch.org/docs/master/func.migrating.html}{migration} to \href{https://pytorch.org/docs/stable/func.html}{torch.func} is advised. Using the concatenation and vmap should allow getting rid of for loop or list comprehension.
+
+    \subsubsection{Vectorisatoin at the Element scale}
+
+    As I was unable to use module ensembling and \code{torch.vmap} on our implementation, I ended up re-writing the Element block so that it computes all elements in parallel in a vectorised fashion. Doing so means that there is a single \code{ElementModule} that inputs all the element indexes as oppose to having a library of all the elements of the mesh.
+
+    \subsubsection{Comparison with classcial FEM solvers}
+    \cite{park_convolution_2023} emphasise in their abstract that in order to get similar computational time with HiDeNN as we get with standard FEM solvers on CPU they have to use GPUs.
+    \Rq{The comparison does not really make sens anymore as the hardware is different but that provide a good insight on order of magnitude of the computational time differences they are experiencing.}
+\subsection{NeuROM}
+ In the parametric context, the implementation can be made so that the constitutive blocks are very general and so that no changes are required in the interpolating architecture. The HiDeNN architecture is therefore written once for any kind (different number of parameters, different discretisation of the parameter spaces, and so on)  of problem. 
+
+ However, the loss function is problem dependent, the implementation difficulty for a new problem therefore lies in writing the loss function in an appropriate and efficient manner.
+
+\subsubsection{Training}
+
+It seems that the \code{deep\_copy} of state dict is very slow, should monitor its impact and if needed think of a way to make it faster.
+
+
+ \section{Ressources on Jean-Zay}
+\label{sec:JZ}
+ In order to get access to (free) ressources on Jean-Zay we need to provide
+
+ \begin{itemize}
+     \item Title
+     \begin{itemize}
+         \item Real-time simulation and individualisation of the human lung
+     \end{itemize}
+     \item Thematic (Note that no matter what we select we later have to specify whether or not we use AI)
+     \begin{itemize}
+         \item CT3 Biologie et santée
+         \item CT6 Algorithmique, informatique et mathématiques 
+         \item CT10 Inteligence artificielle et applications transversales de calcul 
+     \end{itemize}
+     \item Public summary of the project 
+     \begin{itemize}
+         \item This project aims to provide clinicians with diagnostic and prognostic tools based on mechanical simulation. Therefore, it is necessary to set up numerical tools that give access to mechanical quantities computed in real-time for each patient, i.e., to allow on-the-fly evaluation of the complex mechanical model for a new set of parameters. Therefore, The idea is to couple classical model-order reduction methods with machine learning capabilities to provide a fine-tuned solution to the highly non-linear mechanics problem in real-time. In order to achieve interpretability of the neural network parameters and to limit their number, this work is based on the HiDeNN framework, which proposes to constrain the interpolation offered by the neural network to interpolation by shape function similar to the interpolation of fields when using the finite element method. This framework also allows great flexibility in transfer learning between different models. When a model is refined, the information learned during training of a coarser model can be transferred to the refined model, allowing great efficiency in the model's design and limiting the wasteful use of resources.
+         
+A second way of making the method as efficient as possible is to use the tensor decomposition classically used in model-order reduction to avoid the curse of dimensionality, which means that the number of unknowns in a problem grows exponentially with the number of parameters.
+
+The goal is to use this hybridisation between model-order reduction and machine leaning to make a complex lung model clinically usable by providing a virtual abacus of this model for a large number of parameters, i.e. by providing a parametric digital twin of the lung which would be numerically inexpensive.
+     \end{itemize}
+     \item Technical representative
+     \begin{itemize}
+         \item abdelfattah halim
+     \end{itemize}
+ \end{itemize}
+
+\section{Optimizer}
+
+The \code{Adagrad()} optimizer does not seem to add any improvement over standard adam method even in the case of parametric implementatin where the difference in the magintude of the compnent could have given the edged to adagrad method as different learning rate for each of the parameters would have made sense.
+
+
+\section{Parametric efficiency}
+
+\subsection{Efficiency findings}
+When the number of parameters increases the cost drastically increases and I do not know why. 
+
+
+\subsection{Different implementation strategies}
+Basically the parameters and the modes are handled as a list of Modules (functions) that are indexed by the mode number and the parameter number. Each function within the list is well vectorised.
+
+
+\paragraph{The first non optimal idea is to use for loops}
+
+Two nested loops to iterate through the functions stored in \code{self.Para\_modes}.
+\RestyleAlgo{ruled}
+
+%% This is needed if you want to add comments in
+%% your algorithm with \Comment
+\SetKwComment{Comment}{/* }{ */}
+\SetEndCharOfAlgoLine{}
+\begin{algorithm}[hbtp!]
+	\caption{Parameter modes evaluation}\label{alg:two}
+	\textbf{Inputs: } \code{Para\_mode\_Lists}, \code{mu} \textcolor{GreenLMS}{\Comment*[r]{List of Modules and parameters samples mu}}
+	
+	\For(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Loop over the modes\hspace{-6pt}}}){$k \in \llbracket 1,m \rrbracket$}{
+
+	\For(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Loop over the parameters\hspace{-6pt}}}){$k \in \llbracket 1,\beta \rrbracket$}{
+            \code{Para\_mode\_List[mode][l] = self.Para\_modes[mode][l](mu[l]) 
+            }
+    }
+    }
+\end{algorithm}
+
+\paragraph{List comprehension}
+
+The for loops can easily be converted to list comprehension.
+
+\begin{algorithm}[hbtp!]
+	\caption{Parameter modes evaluation}\label{alg:two}
+	\textbf{Inputs: } \code{Para\_mode\_Lists}, \code{mu} \textcolor{GreenLMS}{\Comment*[r]{List of Modules and parameters samples mu}}
+	
+\code{Para\_mode\_Lists = [[self.Para\_modes[mode][p](mu[p])} 
+\code{for p in range(self.n\_para)]for mode in range(self.n\_modes)]}
+\end{algorithm}
+
+No speed-up is observed. The \code{ModuleList} offers the same syntax as python lists but the implementation might differ.
+
+\paragraph{Vectorisation over the indexes} Because the output of each functions in \code{ModuleList} are independent from one-another it would be perfectly possible to run their evaluation in parallel. To that aim several vectorisation implementation where tried with little to no success.
+
+\begin{itemize}
+    \item Slicing does not work on Module or function lists
+    \item There's no way to vmap directly over an array of functions \href{https://github.com/google/jax/issues/673}{see this topic}
+    \item There is a workaround using switch (not implemented in \textsc{pytorch} yet but works with jax)
+\end{itemize}
+
+I tried the workaround proposed \href{https://github.com/google/jax/issues/673}{here} using jax to compare the speed up results and.... it was way worse (10x slower than using for loops).
+
+I tried \code{jax.jit} over the vmaped function and it was even worse (100x slower than using for loops)
+
+\Rq{Those findings might be linked to early versions of jax not being well optimised for M2 chips yet}
+
+
+\paragraph{Results:}
+On a simpler example the evaluation of the above mentioned methods was tried and yield the conclusion that on our hardware the list comprehension might be the best way to go.
+\begin{verbatim}
+**** Example 1 ****
+For loop:               t = 1.180887222290039ms
+List comprehension:     t = 1.0099411010742188ms
+vmap:                   t = 100.78692436218262ms
+\end{verbatim}
+
+
+\paragraph{Investigation on why it is so slow}
+
+with one parameter the complexity seems to be O(m) which sounds reasonable.
+
+If I fix $m=1$ and go from $1$ parameter to $2$, the running time per epoch increases by a factor $5$.
+
+\Rqs{It might be due to the loss implementation that somehow brings back the curse of dimensionality. It does not seem easy to remove the full tensors field evaluation to compute the integral due to the square of the gradient $$\left( \frac{\partial u}{\partial x} \right)^2 = \left( \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{\frac{\mathrm{d}\overline{\vect{u}}_i(\vect{x}) }{\mathrm{d}x}} ~\textcolor{LGreenLMS}{\prod_{j=1}^{\beta}\lambda_i^j(\mu^j)} \right)^2$$}{Try to rely on  the orthogonality of the space modes (which we do not have currently but could be post-processed with GS or constrained )}
+
+
+\Rq{It could be interesting to have fine batches in the x direction and have mini-natches for the parameters to remove the curese of dimensionality somehow or lessen it.}

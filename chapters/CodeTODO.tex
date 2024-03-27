@@ -1,0 +1,47 @@
+\chapter[Technical TODOs]{Technical TODOs}
+
+\begin{chapabstract}
+    A Python implementation of the above-mentioned frameworks is available on the INRIA \href{https://gitlab.inria.fr/aldabyse/hidenn_1d}{Gitlab}.
+\end{chapabstract}
+
+\minitoc
+
+\section{Reusing previous training}
+
+One significant advantages of HiDeNN architecture is its ability to benefit from previous training when being refined thanks to its interpretable nature. 
+
+In order to benefit from such a propriety, an efficient model saving and model loading strategy needs to be set up. Indeed the saving and loading on-the-shelf functions of pytorch do not allow for changes in the architecture so a way to utilise such functions while still allowing the architecture to evolve is required.
+
+\begin{itemize}
+    \item Save sub independent neural networks and load them individually
+    \item iterate through all parameters manually 
+    \item Load model on same architecture and then modify it
+\end{itemize}
+
+On key element is that because we know what the parameters mean we can also initialise the new parameters wisely. For instance when a new node $\ell$ is add at coordinate $\vect{x}_{\ell}$, the nodal value (the weights of the solution layer) can be initialised using the interpolation of the previously trained network as
+\begin{equation}
+    u_{\ell} = \vect{u}\left(\vect{x}_{\ell}\right).
+\end{equation}
+
+\paragraph{What could be done:} 
+\begin{itemize}
+    \item Get a finer mesh
+    \item Save untrained fine model
+    \item Load a coarser pre-trained model
+    \begin{itemize}
+        \item Get a parser to read the difference in both architecture
+        \item \code{model = torch.load(`Model')}
+        \item \code{model.keys()} to get the entries 
+        \item \code{model[`Space\_modes.0.NodalValues\_uu']} to get the number of nodal values for instance and their values
+    \end{itemize}
+    \item Evaluate the coarse model on fine mesh
+    \item Update the \code{model state} dictionary for the new fine architecture using the evaluated values (leave the new values at their initial state)
+    \item Load that dictionary on the fine model
+\end{itemize}
+
+\Rq{Once this works we could use that propriety during training and use a coarse mesh for the first training iterations and use the solution of that pre-training as a ``macro solution'' for the finer simulation thus decreasing the number of ``costly'' training iterations while still getting a fine solution.}
+
+That works, 
+\begin{itemize}
+    \item Decide what to do with training (freeze part of the pre-trained network to get out of local minimum?)
+\end{itemize}

@@ -1,0 +1,43 @@
+\chapter[The 29$^{\text{th}}$ of February 2024 - Parametric investigation]{Parametric investigation}
+\begin{chapabstract}
+    Recaps of the novelty and investigations: 2- and 3-parameter NN-PGD
+\end{chapabstract}
+
+\minitoc
+
+\section{NeuROM - Parametric reduced-order model}
+\subsection{1 extra parameter}
+Varying the overall stiffness on the hole structure.
+\begin{itemize}
+    \item First implementation of a NN-PGD (not automatically Greedy yet) \cref{chap:TD} in \cref{1D_NeuROM}
+    \begin{itemize}
+        \item The error indicator provided by the mixed formulation might be useful for on the fly decision of addition of new modes or not
+    \end{itemize}
+    \item Might need to rethink the Module architecture if no way to parallelise using \code{vmap} (Vectorisation of Modules).
+    \item Advantage of classical PGD, only the loss has to be re-written for a new problem
+    \item Initialisation from coarser ROM (coarser mesh and/or fewer modes) in \cref{chap:Transfer_learning}.
+    \begin{itemize}
+        \item In the same spirit as \cite{giacoma_toward_2015}
+        \item Leverage higher transfer learning capabilities of HiDeNN
+    \end{itemize}
+    \item Discussion on the orthogonality constraint 
+    \item Non zero BCs implementation in NeuROM in \cref{chap:TD} in \cref{BCs_TD}
+    \item Different behaviour with non zero BCs
+\end{itemize}
+
+\subsection{2 extra parametera}
+
+Works very well (3 modes) for a 2 stiffness structure (left half and right half having different young moduli that can each take any given value in a given parametric range. (how to represent without GiF ?) \cref{chap:TD} in \cref{1D_NeuROM_Bi}
+\section{Technical}
+
+\subsection{Code efficiency}
+
+\begin{itemize}
+    \item Re-think architecture to vectorise as many functions as possible
+    \item Need to use GPUs to get same performaces as FEM solvers \parencite{park_convolution_2023}
+\end{itemize}
+
+\subsection{Jean-Zay cluster}
+
+See \cref{chap:Note} in \cref{sec:JZ}.
+

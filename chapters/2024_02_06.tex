@@ -1,0 +1,80 @@
+\chapter[The 6$^{\text{th}}$ of February 2024 - Method papers - Goals \& quick description]{Method papers - Goals \& quick description}
+\label{chap:MethodPapers}
+\begin{chapabstract}
+    The chapter recaps the meeting where we outline the objectives of the two method papers we aim to submit before summer.
+\end{chapabstract}
+
+\minitoc
+
+\section{Method papers}
+
+The first objective of 2024 is to set up the required tools to speed up both the micro and macro problems. The HiDeNN framework \parencite{zhang_hierarchical_2021} is a suitable candidate to give reduced models at both scales.
+
+Some developments are still required to have a suitable framework for our needs. These developments are expected to be promoted through two \emph{method papers} described in the following sections.
+
+\section{PDE solving - Mixed formulation}
+The objective of that first paper would be to present
+\begin{itemize}
+    \item Optimised training strategy 
+    \item Use a Mixed-formulation (PINN form of loss function)
+    \item ``Element-wise'' implementation
+\end{itemize}
+
+Some open questions / possible work could include working on 
+\begin{itemize}
+    \item Regularisation of the Loss / Preventing collision of the nodes (negative Jacobian) to occur
+\end{itemize}
+
+The closest milestones are
+\begin{itemize}
+    \item Quadratics shape functions in 1D
+    \item Definitions of shape functions suitable for 2D (see \cref{chap:TD})
+\end{itemize}
+
+\section{Parametric PDE}
+
+An essential aspect of the required tool is providing a reduced-order parametric field model. 
+\subsection{Short term}
+This paper will rely on the tensor decomposition (TD) presented by \cite{zhang_hidenn-td_2022} and described in \cref{chap:TD}. It will focus on 
+\begin{itemize}
+    \item Implementing different parameters in the TD (as opposed to only spatial parameters as in \parencite{zhang_hidenn-td_2022}).
+    \item Adapt the number of modes of the tensor decomposition of the fly (\emph{a priori ROM})
+    \item Automate the non-linear interpolation using non-linear combinations of the modes (as opposed to solely using linear combinations of the modes as done in PGD, for instance)
+    \begin{itemize}
+        \item Such an optimisation could be based on a fully connected small NN in between the modes and the solution layer.
+        \item $\vect{u}\left(\textcolor{BleuLMS!70}{\vect{x}}, \textcolor{LGreenLMS}{\left\{\mu_i\right\}_{i \ in \llbracket 1, \beta \rrbracket}}\right) = \sum\limits_{i=1}^m \textcolor{BleuLMS!70}{f\left(\overline{\vect{u}}_i(\vect{x})\right)} ~\textcolor{LGreenLMS}{\prod_{j=1}^{\beta}g\left(\lambda_i^j(\mu^j)\right)}$ 
+        With $f$ and $g$ arbitrary functions of the modes, learned by the neural network in the reduced-order space so that the learning cost is lower but we achieve better reductibility by using non-linear combinations of the modes instead of increasing drastically the number of modes required.
+        \item Take up the general idea put forward by \cite{kramer_learning_2024,geelen_learning_2023} but extend it to automate the non-linear combination  without prior knowledge of the required interpolation as opposed to guessing polynomial combinations
+    \end{itemize}
+\end{itemize}
+
+A nice bonus would include the aspects of parametric spatial dependency described in \cref{chap:TD} in \cref{sec:SpatialParameters}.
+
+\subsection{Mid term}
+\label{ParaRefinement}
+If the parameters' space is a tensor product of 1D spaces, then a localised refinement (as illustrated in \cref{fig:LocalRefinement}) of the parametric space is impossible, which would render the parametric description too heavy (as illustrated in \cref{fig:TDRefinement}). A specific strategy to describe the parameter space is required for localised refinement. 
+\begin{itemize}
+    \item High dimension shape functions for the hypercube parameters for instance
+    \item What would be the impact of a pre-processing fully connected layer in between the input of the parameters and the 1D shape functions of the parameters?
+    \begin{itemize}
+        \item The parameters would not be treated independently from one another anymore as the pre-processing layer would connect them. What impact would that have on the Tensor Decomposition?
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}
+\begin{subfigure}[t]{0.5\linewidth}
+    \centering
+    \include{Schema/RefinementDiagrams.tex}
+    \caption{Local refinement in a 2D parametric space}
+    \label{fig:LocalRefinement}
+\end{subfigure}
+  \begin{subfigure}[t]{0.5\linewidth}
+    \centering
+    \include{Schema/RefinementDiagram_TD.tex}
+    \caption{Constrained refinement in two 1D-spaces tensor product}
+    \label{fig:TDRefinement}
+\end{subfigure}  
+\caption{Refinement possibility of a 2D parametric space compared to its counterpart decomposed as a tensor product of two 1D spaces}
+\end{figure}
+
+\Rq{Each PGD modes are computed on an independent mesh, hence the localised correction of latter modes can lead to specific mesh refinement. \newline \noindent \textcolor{LGreenLMS}{\faLightbulb} This could solve the issue mentioned above.}

@@ -1,0 +1,119 @@
+\usepackage{subcaption}
+% % Tikz (and externalization (in a subdir of build))
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,shapes.multipart,positioning,math,matrix,shadows,decorations}
+\usepackage{wrapfig}
+% \usepackage{microtype}
+% \usepackage[capitalise,noabbrev,nameinlink]{cleveref}
+\usepackage{amssymb}
+
+\usepackage[labelfont={bf,color=accentcolor}]{caption}
+\DeclareCaptionLabelSeparator{bullet}{~$\bullet$~}
+\captionsetup{labelsep=bullet}
+\captionsetup{format=hang}
+\usepackage{algorithm2e}
+
+% Biblio
+\usepackage[bibstyle=custom-apa,labeldate=year,citestyle=apa,isbn=false,url=false,eprint=false,backref=true,sortcites=false,sorting=nyt]{biblatex} % for bracket style quotes in text
+% Increase the line spacing in the bibliography
+\setlength\bibitemsep{1.5\itemsep} 
+
+\delimitershortfall=-1pt
+\newcommand{\mkbibbracketscol}[1]{\mkbibbrackets{\textcolor{accentcolor}{#1}}}
+\DeclareCiteCommand{\parencite}[\mkbibbracketscol]
+{\usebibmacro{cite:init}%
+	\usebibmacro{prenote}%
+	\toggletrue{apa:inpcite}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{cite}%
+	\usebibmacro{cite:post}%
+	\togglefalse{apa:inpcite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+% Usefull commands
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Operators
+\newcommand{\matrice}[1]{\boldsymbol{#1}}
+\newcommand{\ftensor}[1]{\mathbb{#1}}
+\newcommand{\tensor}[1]{\boldsymbol{#1}}\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\four}[1]{{#1}_\omega}
+
+% Mechanical quantities
+\newcommand{\epsp}[0]{\underline{\underline{\varepsilon}}^p} % version 1
+\newcommand{\sigm}[0]{\mathcal{\boldsymbol{\sigma}}}
+\newcommand{\sigmPGD}[0]{\underline{\underline{\overline{\sigma}}}} % version 1
+\newcommand{\epspPGD}[0]{\underline{\underline{\overline{\varepsilon}}}^p} % version 1
+\newcommand{\uPGD}[0]{\underline{\overline{u}}} % version 1
+\newcommand{\eps}[0]{\mathcal{\boldsymbol{\varepsilon}}}
+\newcommand{\depsp}[0]{\dot{\underline{\underline{\varepsilon}}}^p} % version 1
+\newcommand{\dcepsp}[0]{\hat{\dot{\underline{\underline{\varepsilon}}}}^p} % version 1
+\newcommand{\tbr}[1]{\llbracket\mkern-5mu\llbracket #1 \rrbracket\mkern-5mu\rrbracket}
+
+%%% Colours
+\definecolor{BleuLMS}{RGB}{1, 66, 106}
+\definecolor{accentcolor}{RGB}{1, 66, 106}
+\definecolor{GreenLMS}{RGB}{0,103,127} 
+\definecolor{LGreenLMS}{RGB}{67,176,42} 
+\definecolor{RougeLMS}{RGB}{206,0,55} 
+
+% Beamer commands
+\newcommand*{\citeperso}{\textcolor{BleuLMPS!60}} 
+\newcommand{\leg}[1]{\textcolor{BleuLMS}{\underline{#1}}}
+
+
+% \tcbset{shield externalize}
+\newcommand{\Rq}[1]{
+	\begin{tcolorbox}[breakable,colback=accentcolor!10!white,boxrule=0pt,frame hidden,enhanced,borderline west={7pt}{0pt}{accentcolor}]
+		\textcolor{accentcolor}{\textbf{\textcolor{accentcolor}{\faLightbulb[regular]} ~ {\fontfamily{lmss}\selectfont
+					Remark
+				}~~}} #1
+	\end{tcolorbox}
+}
+
+\newcommand{\Rqs}[2]{
+	\begin{tcolorbox}[breakable,colback=accentcolor!10!white,boxrule=0pt,frame hidden,enhanced,borderline west={7pt}{0pt}{accentcolor}]
+		\textcolor{accentcolor}{\textbf{\textcolor{accentcolor}{\faLightbulb[regular]} ~ {\fontfamily{lmss}\selectfont Remark 1}~~}} #1 
+			\medbreak
+		\textcolor{accentcolor}{\textbf{\textcolor{accentcolor}{\faLightbulb[regular]} ~ {\fontfamily{lmss}\selectfont Remark 2}~~}} #2
+	\end{tcolorbox}
+}
+
+
+% \usepackage{etoolbox}
+
+% \newcounter{remarkcounter}
+% \newcommand{\Rqs}[1]{%
+%   \begin{tcolorbox}[breakable,colback=accentcolor!10!white,boxrule=0pt,frame hidden,enhanced,borderline west={7pt}{0pt}{accentcolor}]
+%     \setcounter{remarkcounter}{0}%
+%     \forcsvlist{\addtocounter{remarkcounter}{1}\RqsItem}{#1}%
+%   \end{tcolorbox}%
+% }
+
+% \newcommand{\RqsItem}[1]{%
+%   \textcolor{accentcolor}{\textbf{\faLightbulb[regular] ~ {\fontfamily{lmss}\selectfont Remark \arabic{remarkcounter}}~~}} #1\medbreak
+% }
+
+
+
+\newcommand{\Ccl}[1]{ 
+
+	\clearpage\vspace*{\fill}\phantomsection\addcontentsline{toc}{section}{\faPenNib \quad Chapter summary \& perspectives}
+	\begin{tcolorbox}[colback=white,boxrule=0pt,frame hidden,arc=5pt,outer arc=5pt,enhanced,borderline west={2pt}{0pt}{accentcolor},borderline north={2pt}{0pt}{accentcolor}]
+		\section*{\textcolor{accentcolor}{\faPenNib ~ Chapter summary}} %\addcontentsline{toc}{section}{\protect\numberline{}Chapter overview} #1 % Put title at same spacing as normal section but without numbering
+		 #1
+	\end{tcolorbox}
+}
+
+\newcommand{\Persp}[1]{\par
+	\textcolor{accentcolor}{\threestars}
+	\bigbreak
+	\begin{tcolorbox}[colback=white,boxrule=0pt,frame hidden,arc=5pt,outer arc=5pt,enhanced,borderline east={2pt}{0pt}{accentcolor},borderline south={2pt}{0pt}{accentcolor}]
+		\section*{\textcolor{accentcolor}{\faSafari ~ Perspectives}}
+		%		 \addcontentsline{toc}{section}{\protect\numberline{}Perspectives} #1% Put title at same spacing as normal section but without numbering
+		%\addcontentsline{toc}{section}{\faSafari \quad Perspectives} 
+		#1	
+	\end{tcolorbox} \vspace*{\fill}
+}
