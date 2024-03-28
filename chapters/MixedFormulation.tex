@@ -59,3 +59,40 @@ Contrary to what we though, we in fact need to use the "leaking" version of shap
     \caption{Neural network representation of mixed formulation for problem with Dirichlet boundary conditions. The boundary conditions are strictly prescribed for the NN providing the prediction of displacement $u$ and weakly (through loss function) for the NN providing the prediction of derivative of displacement $\frac{\partial u}{\partial x}$.   }
     \label{fig:BCsMixed}
 \end{figure}
+
+
+\section{Neuman boundary conditions}
+
+With the mixed formulation an important question concern the way boundary conditions are prescribed.
+
+They can be seen as Dirichlet boundary conditions on the dual field, \emph{i.e.} constraints in the interpolation. A difficulty may arise when we want to implement relation constraints between different components. Indeed, in such a case the components are still free to evolve but under a given constraint.
+
+Such a constraint can then be prescribed before evaluating the NN within the training loop so that it would be updated as the stress nodal quantities evolve.
+
+
+
+\RestyleAlgo{ruled}
+
+%% This is needed if you want to add comments in
+%% your algorithm with \Comment
+\SetKwComment{Comment}{/* }{ */}
+\SetEndCharOfAlgoLine{}
+\begin{algorithm}[hbtp!]
+	\caption{Neuman boundary conditions during training}\label{alg:NeumanBCs}
+	\textbf{Inputs: } \code{model\_stress}, \code{model\_disp}, \code{\{$\sigma_i$\}}, \code{\{$u_i$\}} \textcolor{GreenLMS}{\Comment*[r]{Two models and corresponding nodal quantities}}
+	
+	\While(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Training loop \hspace{-6pt}}}){Training}{
+		 \code{\{$\sigma_i$\}} $ = f$( \code{\{$\sigma_i$\}}, \code{\{$u_i$\}})  \textcolor{GreenLMS}{\Comment*[r]{ Boundary conditions constraints}}
+		 
+		 $\sigma \left(x \right) = $  \code{model\_stress}$(x)$ \textcolor{GreenLMS}{\Comment*[r]{ Stress evaluation}}
+		 
+		 $u \left(x \right) = $  \code{model\_disp}$(x)$    \textcolor{GreenLMS}{\Comment*[r]{ Displacement evaluation}}
+		 
+		 $\mathcal{L} = \mathcal{L}\left(\sigma \left(x \right) , u \left(x \right)  \right)$  \textcolor{GreenLMS}{\Comment*[r]{ Loss evaluation}}
+
+		\code{optimiser.step}  \textcolor{GreenLMS}{\Comment*[r]{ Update the models}}
+
+	}
+\end{algorithm}
+\newpage
+\Rqs{The evlaluation of the stress is then done using nodale stress values in the \code{model\_stress} that are consistant with the boundary conditions.}{Such an implementation would also easily allow dealing with changing normal during training for large strains for instance.}
