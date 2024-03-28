@@ -14,6 +14,7 @@ Data-Driven Simulation Technologies for Clinical Decision Making
 \end{itemize}
 
 \subsection{Parametric paper}
+\paragraph{Hybridising standard reduced-order modelling methods with interpretable sparse neural networks for real-time patient specific lung simulations}
 
 Stress fields possibly play a crucial role in the development of pulmonary fibrosis. This work, aims to provide clinicians with diagnostic and prognostic tools based on mechanical simulation. Personalisation of these tools is critical for clinical pertinence, thus requiring numerical techniques for real-time estimation of patient-specific mechanical parameters.
 
@@ -25,3 +26,11 @@ This hybridisation preserves interpretability while affording greater flexibilit
 
 In this framework, the training stage amounts to solving the minimisation problem classically encountered with classical model reduction methods, but the automatic differentiation tools naturally available in the neural network framework allow greater flexibility in solving this minimisation problem when a linearisation of the problem is not straightforward. 
 Finally, this framework allows for transfer learning between different models with different architectures, leading to high efficiency in the model's design and limiting the wasteful use of resources.
+
+\subsection{Mixed formulation}
+\paragraph{Bridging Micro to Macro in Pulmonary Mechanics: Interpretable Neural Networks for Surrogate Modelling}
+Idiopathic Pulmonary Fibrosis (IPF) is a disease characterized by the progressive formation of scar tissue in the lungs, leading to locally increased tissue stiffness and impaired respiratory function. Despite its significant impact on patient health, IPF remains poorly understood and poorly diagnosed. Our focus on IPF is motivated by the complex impact the fibrosis has not only on the lung tissue structure but also on the lung kinematics, and mechanics. The coupling between the disease progress and mechanical environment, as well as the multiscale nature of the disease, calls for a multiscale modeling approach to connect phenomena arising on various spatial scales. In order to integrate the existing micromechanical and organ-level models, the micro-model needs to undergo reduction. In our work, we propose to address this challenge by using a machine learning-based surrogate modeling framework.
+
+In the presented framework, we use structured neural networks designed to be able to produce standard FEM shape functions. Similarly, to classical Physics-informed neural networks, this framework also has the capability to incorporate mechanistic knowledge through appropriate definition of the loss function. Due to the specific structure of the neural network, the number of trained parameters is significantly lower compared to a fully connected neural network and the individual weights and biases have a clear interpretation. In addition to higher reliability, the interpretability also allows us to strongly impose Dirichlet boundary conditions and thus avoid some of the changes caused by including additional terms in the loss function.
+
+In this contribution, we present the capabilities of the model on several 1D and 2D test cases. The architecture of the neural network is defined by the discretization of the domain on which the governing equations are solved. There are however other choices, that effect the results, including the definition of the loss function and selection of optimizer and training strategy. We discuss the benefits and limitation of the tested variants and show how they affect the results obtained by the model.
