@@ -82,13 +82,15 @@ Such a constraint can then be prescribed before evaluating the NN within the tra
 	\textbf{Inputs: } \code{model\_stress}, \code{model\_disp}, \code{\{$\sigma_i$\}}, \code{\{$u_i$\}} \textcolor{GreenLMS}{\Comment*[r]{Two models and corresponding nodal quantities}}
 	
 	\While(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Training loop \hspace{-6pt}}}){Training}{
-		 \code{\{$\sigma_i$\}} $ = f$( \code{\{$\sigma_i$\}}, \code{\{$u_i$\}})  \textcolor{GreenLMS}{\Comment*[r]{ Boundary conditions constraints}}
+		Compute the $\vect{n}\text{ on }\partial \Omega$ \textcolor{GreenLMS}{\Comment*[r]{ Update the normal vectors on the BCs}}
+		
+		 \code{\{$\sigma_i$\}} $ = f$( \code{\{$\sigma_i$\}}, \code{\{$u_i$\}}, $\vect{n}$)  \textcolor{GreenLMS}{\Comment*[r]{ Boundary conditions constraints}}
 		 
-		 $\sigma \left(x \right) = $  \code{model\_stress}$(x)$ \textcolor{GreenLMS}{\Comment*[r]{ Stress evaluation}}
+		 $\sigm \left(\vect{x} \right) = $  \code{model\_stress}$\left(\vect{x} \right)$ \textcolor{GreenLMS}{\Comment*[r]{ Stress evaluation}}
 		 
-		 $u \left(x \right) = $  \code{model\_disp}$(x)$    \textcolor{GreenLMS}{\Comment*[r]{ Displacement evaluation}}
+		 $\vect{u} \left(\vect{x} \right) = $  \code{model\_disp}$\left(\vect{x} \right)$    \textcolor{GreenLMS}{\Comment*[r]{ Displacement evaluation}}
 		 
-		 $\mathcal{L} = \mathcal{L}\left(\sigma \left(x \right) , u \left(x \right)  \right)$  \textcolor{GreenLMS}{\Comment*[r]{ Loss evaluation}}
+		 $\mathcal{L} = \mathcal{L}\left(\sigm \left(\vect{x} \right) , \vect{u} \left(\vect{x} \right)  \right)$  \textcolor{GreenLMS}{\Comment*[r]{ Loss evaluation}}
 
 		\code{optimiser.step}  \textcolor{GreenLMS}{\Comment*[r]{ Update the models}}
 
