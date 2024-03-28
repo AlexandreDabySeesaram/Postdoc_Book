@@ -476,11 +476,13 @@ The idea is to project a given spatial field $\mu\left(x\right)$ onto a suitable
     \mu\left(x\right) = \sum\limits_{k=1}^{\beta}\mu^{k}f^k\left(x\right).
 \end{equation}
 
+\subsection{Wavelets}
+
 To do so while maintaining a relatively low number of parameters, we propose to project this field onto a wavelet functions basis that have proven efficient at capturing strong localised gradients.
 
 \Rqs{On difficulty is that the $\{\mu^i\}$ from one patient to the other must be associated to the same space functions $\left\{f^i\right\}$ so that they carry the same physical meaning and the model trained for a given patient can be used for another one. }{The previous remark implies in particular that the truncation can not be preceded by a sorting of the $\left\{\mu^i\right\}$ as such an operation would be patient specific. The $N_w$ first weight will be kept no matter their decay; the truncated representation on the wavelet basis is therefore be suboptimal...}
 
-\subsection{Wavelets in 1D}
+\subsubsection{Wavelets in 1D}
 \begin{figure}
 \begin{subfigure}[t]{0.5\linewidth}
     \centering
@@ -506,7 +508,7 @@ To do so while maintaining a relatively low number of parameters, we propose to 
     \label{Wavelet_1D}
 \end{figure}
 
-\subsection{Wavelets in 2D}
+\subsubsection{Wavelets in 2D}
 
 \begin{figure}
 \begin{subfigure}[t]{0.5\linewidth}
@@ -531,18 +533,18 @@ To do so while maintaining a relatively low number of parameters, we propose to 
 \end{itemize}}
 
 
-\subsection{Frontiere parametrisation}
+\subsection{Boundary parametrisation}
 
-If we only care about healthy and diseased zones it seems to be overkill to have several hundreds of parameters to tile the entire space. Using directly a parametrisation of the diseased boundary seems more appropriate. An example of which is illustrated in \cref{fig:space_partition} for two regions in the 1D case.
+If we only care about healthy and diseased zones it seems to be overkill to have several hundreds of parameters to tile the entire space. Using directly a parametrisation of the diseased mobile boundary seems more appropriate. An example of which is illustrated in \cref{fig:space_partition} for two regions in the 1D case.
 
 \begin{figure}
     \centering
     \includegraphics[width = 0.7\linewidth]{Figures/SpacePartition.pdf}
-    \caption{Space partition}
+    \caption{Space partition with a mobile boundary}
     \label{fig:space_partition}
 \end{figure}
 
-One difficulty that may arrise from such an approach is the loss of separability in the TD for the zone parametrisation regarding space. Indeed, the space modes would then depend on those parameters. 
+One difficulty that may arise from such an approach is the loss of separability in the TD for the zone parametrisation regarding space. Indeed, the space modes would then depend on those parameters. 
 
 To test the separability assumption, three dummy functions where decomposed using an SVD and then truncated. 
 
@@ -656,7 +658,16 @@ If clustering region is fine then a choice of separability for the solution must
     \end{equation}
 
 
-    Somehow it makes sens to first create the $\textcolor{BleuLMS!70}{\overline{\vect{u}}_i(\vect{x,\alpha})}$ rather than mix the space vriability with the parametric variability but it might not be the best solution.
+    Somehow it makes sense to first create the $\textcolor{BleuLMS!70}{\overline{\vect{u}}_i(\vect{x,\alpha})}$ rather than mix the space variability with the parametric variability but it might not be the best solution.
 
-    \Rq{Intuitively there is a kind of hierarchy in the parameter which I think should be reflected in the decomposition.}
+    \Rqs{Intuitively there is a kind of hierarchy in the parameter which I think should be reflected in the decomposition.}{\begin{itemize}
+    		\item While wavelets still impose having numerous parameters
+    		\begin{itemize}
+    			\item Multiplied by the number of modes
+    		\end{itemize}
+    		\item Here only the number o modes is increased
+    		\begin{itemize}
+    			\item With the hirearchy in the TD, the number of modes for the other parameters may even be unchanged.
+    		\end{itemize}
+    \end{itemize}}
 % \subsubsection{Beating Kolmogorov with a nonlinear interpolation ?}
