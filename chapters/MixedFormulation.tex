@@ -61,13 +61,13 @@ Contrary to what we though, we in fact need to use the "leaking" version of shap
 \end{figure}
 
 
-\section{Neuman boundary conditions}
+\section{Neumann boundary conditions}
 
 With the mixed formulation an important question concern the way boundary conditions are prescribed.
 
 They can be seen as Dirichlet boundary conditions on the dual field, \emph{i.e.} constraints in the interpolation. A difficulty may arise when we want to implement relation constraints between different components. Indeed, in such a case the components are still free to evolve but under a given constraint.
 
-Such a constraint can then be prescribed before evaluating the NN within the training loop so that it would be updated as the stress nodal quantities evolve.
+Such a constraint can then be prescribed before evaluating the NN within the training loop so that it would be updated as the stress nodal quantities evolve as illustrated in \cref{alg:NeumannBCs}.
 
 
 
@@ -78,7 +78,7 @@ Such a constraint can then be prescribed before evaluating the NN within the tra
 \SetKwComment{Comment}{/* }{ */}
 \SetEndCharOfAlgoLine{}
 \begin{algorithm}[hbtp!]
-	\caption{Neuman boundary conditions during training}\label{alg:NeumanBCs}
+	\caption{Prescribing Neumann boundary conditions during training}\label{alg:NeumannBCs}
 	\textbf{Inputs: } \code{model\_stress}, \code{model\_disp}, \code{\{$\sigma_i$\}}, \code{\{$u_i$\}} \textcolor{GreenLMS}{\Comment*[r]{Two models and corresponding nodal quantities}}
 	
 	\While(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Training loop \hspace{-6pt}}}){Training}{
