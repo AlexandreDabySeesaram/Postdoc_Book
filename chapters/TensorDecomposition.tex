@@ -455,17 +455,21 @@ If Parametric modes and space modes are frozen then we get the expected space mo
 
 Having a reduced-order model allows for quick and efficient model updating based on data. 
 
-A classical gradient descent in which the frozen model is used can be implemented under the form of a neural network relying on a loss with a term relative to data fitting. Stochastic methods can also be employed rather cheaply as each query to the reduced-order model would be very inexpensive. 
+A classical gradient descent in which the frozen model is used can be implemented under the form of a neural network relying on a loss with a term relative to data fitting. Stochastic methods can also be employed rather cheaply as each query to the reduced-order model would be very inexpensive. Explicit symbolic derivative of the solution regarding the parameters would also be available.
 
 
 \section{Orthogonality}
 See \cref{Chap_22_03_24}, \cref{sec:orthogonality}.
 \subsection{Space orthogonality constraint}
-It does not allow using the TD for computing the loss but orthonormality can still be imposed atthe ``Node defined'' level within the NN. The hope would be to regularise the minimisation problem and lead to a quicker training. 
+It does not allow using the TD for computing the loss but orthonormality can still be imposed at the ``Node defined'' level within the NN. The hope would be to regularise the minimisation problem and lead to a quicker training. 
 
 In practice it seems that the reduced freedom leads, conversely, to more iterations in the gradient descent. 
 
 \Rqs{This observation might be due to the impossibility to correct small defect in a given mode with another one due to the orthogonality constraint.}{Lifting the orthogonality constraint and imposing only a normality constraint does not help either...}
+
+\subsection{Efficiency}
+
+Without the orthogonality constraint, the number of operation is bound to remain higher, however it appears that the bottleneck was not due to the sole number of operation as using the Einstein's summation in a single pass, \emph{i.e.} without reconstructing the full field tensor as an intermediate step, allowed significant gains and escaping the curse of dimensionality, getting to somehow ``logical''scaling.
 
 \section{Parametrisation of spatial fields}
 
@@ -483,7 +487,9 @@ To do so while maintaining a relatively low number of parameters, we propose to 
 \Rqs{On difficulty is that the $\{\mu^i\}$ from one patient to the other must be associated to the same space functions $\left\{f^i\right\}$ so that they carry the same physical meaning and the model trained for a given patient can be used for another one. }{The previous remark implies in particular that the truncation can not be preceded by a sorting of the $\left\{\mu^i\right\}$ as such an operation would be patient specific. The $N_w$ first weight will be kept no matter their decay; the truncated representation on the wavelet basis is therefore be suboptimal...}
 
 \subsubsection{Wavelets in 1D}
-\begin{figure}
+
+A one dimensional space distribution has been parametrised with wavelet with the idea of decreasing the number of parameters required to describe it. A comparison of different space distribution and wavelet functions is shown in \cref{Wavelet_1D}.
+\begin{figure}[hbpt!]
 \begin{subfigure}[t]{0.5\linewidth}
     \centering
     \includegraphics[width=\linewidth]{Figures/db4_N_22.pdf}
@@ -509,8 +515,8 @@ To do so while maintaining a relatively low number of parameters, we propose to 
 \end{figure}
 
 \subsubsection{Wavelets in 2D}
-
-\begin{figure}
+A two dimensional space distribution has been parametrised with wavelet with the idea of decreasing the number of parameters required to describe it. An illustration of which is given in \cref{Wavelet_2D}.
+\begin{figure}[hbpt!]
 \begin{subfigure}[t]{0.5\linewidth}
     \centering
     \includegraphics[width=\linewidth]{Figures/2D_ref.pdf}
@@ -670,4 +676,8 @@ If clustering region is fine then a choice of separability for the solution must
     			\item With the hirearchy in the TD, the number of modes for the other parameters may even be unchanged.
     		\end{itemize}
     \end{itemize}}
+
+\subsubsection{Tensor network, hierarchical tensor decomposition}
+
+There seem to be a large literature on hierarchical tensor decompositions \parencite{bachmayr_tensor_2016} with sparsity results and comparison with the canonical decomposition. Such a hierarchical decomposition relies on multi-linear combination instead of linear interpolations which is a step forward towards non-linear interpolation.
 % \subsubsection{Beating Kolmogorov with a nonlinear interpolation ?}
