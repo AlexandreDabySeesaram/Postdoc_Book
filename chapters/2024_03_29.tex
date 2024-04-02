@@ -1,0 +1,52 @@
+\chapter[[The 29$^{\text{th}}$ of March 2024 - 2D and parametrisation]{2D and parametrisation}
+
+
+\begin{chapabstract}
+	Technical and strategy discussions about the 2D mixed formulation and the 
+\end{chapabstract}
+
+
+\minitoc
+
+
+
+\section{2D}
+
+\subsection{Convergence study}
+
+\begin{itemize}
+	\item Investigate the convergence propriety of the method as well as its efficiency when refining the mesh.
+	\item Leverages the transfer learning of the HiDeNN framework to gain efficiency while refining (see first results in \cref{chap:Transfer_learning}).
+\end{itemize}
+
+\subsection{Toy examples guidelines}
+
+\begin{itemize}
+	\item Maybe try to avoid singularities
+	\begin{itemize}
+		\item I think that they should be handled as well as in the FEM framework
+		\item But should be careful about how to handle BCs for the stress interpolation network
+	\end{itemize}
+\end{itemize}
+
+
+\section{Parametrisation of the diseased regions}
+
+\begin{itemize}
+	\item \emph{A priori} good idea to use the parametrised functions instead of a full tiling of the space \cref{sec:BoundaryParam}.
+	\item Rely on the level set functions idea to parametrise the functions is a 2D case with a very coarse underlying mesh.
+	\begin{itemize}
+		\item MMC (Moving Morphable Components \parencite{guo_doing_2014}) based on level-set may be a suitable framework
+	\end{itemize}
+\end{itemize}
+
+\section{Writing strategy for the papers}
+
+\begin{itemize}
+	\item Start writing the scale 0 of the papers 
+	\begin{itemize}
+		\item Title 
+		\item Outline
+		\item Figures
+	\end{itemize}
+\end{itemize}
