@@ -1,0 +1,49 @@
+\chapter[The 5$^{\text{th}}$ of April 2024 - Mixed formulation, orthogonalisation \& mor]{Mixed formulation, orthogonalisation \& more}
+
+
+\begin{chapabstract}
+	No meeting but note of ideas and discussions
+\end{chapabstract}
+
+
+\minitoc
+
+\section{Mixed formulation}
+
+\begin{itemize}
+	\item LATIN the return?
+	\begin{itemize}
+		\item Play with the weight of the PDE and CRE terms in the loss to alternate between solving the pde or the constitutive relation
+	\end{itemize}
+\end{itemize}
+
+\section{Parametrisation}
+
+\subsection{Orthogonality}
+\begin{itemize}
+	\item GS does not help, somehow hard to cancel out modes (b puting them to zero or the parameters modes associated with them) hence better to juste have redundant good modes than orthogonal noise
+	\begin{itemize}
+		\item Put the orthogonalisation outside of forward as the forward function is not called during the training
+	\end{itemize}
+\end{itemize}
+
+\subsection{Parametrisation}
+
+\begin{itemize}
+	\item With the level-set functions isn't there risk with parameters that do not play a role away from the boundary in the TD?
+	\item Might also be hard to generate training scenarios (not all combination of parameters would make sense comparer with more standard parametrisation)
+\end{itemize}
+
+
+\subsection{PGD}
+
+\begin{itemize}
+	\item How to get a greedy algorithm without loosing the momentum of the optimiser (changing the architecture)
+	\begin{itemize}
+		\item Set $N$ modes, the max number of modes
+		\item Unfreeze only the $n$ first modes and use only them in the loss
+		\item Gradually increase $n$
+	\end{itemize}
+\end{itemize}
+
+\Rq{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}
