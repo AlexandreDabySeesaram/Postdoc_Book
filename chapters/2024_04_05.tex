@@ -47,3 +47,5 @@
 \end{itemize}
 
 \Rq{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}
+
+\Rq{Directly setting $n$ as trainable is not possible, must rely on L1 reguarisatino. Force the latter modes to go to zero and compute n as last significant mode before computing the loss.}
