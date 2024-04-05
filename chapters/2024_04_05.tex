@@ -78,3 +78,20 @@ In order to choose whether or not to add a mode, a criterion has to be chosen.
 	\caption{Choice of the mode addition criterion}
 	\label{fig:Criterion_mode}
 \end{figure}
+
+\Rqs{Because we are looking at the lifted J, the very small decade crossing at the end are visible but do not appear in the derivation that is computed on the actual J and not the lifeted version (as the minimum is only known at the end of the minisation process)}{This is very visible when comparing error and lifted energy, see \cref{fig:Impact_lift}. We do not plot the energy but the energy error that tends to 0. But the derivative is computed on the energy... We need an \emph{a priori} error estimator that tends to 0 (that omit discretisation error for instance. Is is the case with the residual error given by the mixed formulation?)}
+
+\begin{figure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_Error_Modes_Mono_1.pdf}
+		\caption{Lifted loss and real L2 error}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_Error_Modes_Mono_2.pdf}
+		\caption{Lifted loss and L2 error}
+	\end{subfigure}  
+	\caption{Impact of lifting}
+	\label{fig:Impact_lift}
+\end{figure}
