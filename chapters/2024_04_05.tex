@@ -46,6 +46,35 @@
 	\end{itemize}
 \end{itemize}
 
-\Rq{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}
 
-\Rq{Directly setting $n$ as trainable is not possible, must rely on L1 reguarisatino. Force the latter modes to go to zero and compute n as last significant mode before computing the loss.}
+
+\Rq{\begin{itemize}
+		\item Directly setting $n$ as trainable is not possible
+		\begin{itemize}
+			\item  Rely on L1 reguarisation to force the last modes to go to zero and compute $n$ as last significant mode before computing the loss
+			\item Or have a set training strategy based on the loss decay (as classically done with PGD)
+		\end{itemize}
+	\end{itemize}
+}
+
+\Rqs{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}{For some reason even with a low number of trainable parameters and only the first $n$ modes being used to compute the loss (and therefore its gradient) having a higher $N$ leads to significantly slower execution. This has to be investigated, maybe it will be required to change the architecture to gradually increase the size of the HiDeNN but that would also mean losing the momentum of the optimiser each time a mode is added.}
+
+
+\subsubsection{Criterion for mode addition}
+
+In order to choose whether or not to add a mode, a criterion has to be chosen.
+
+\begin{figure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_Modes.pdf}
+		\caption{Loss decay and mode evolution}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/LossDecay_Modes.pdf}
+		\caption{Loss logarithmic derivative and mode evolution}
+	\end{subfigure}  
+	\caption{Choice of the mode addition criterion}
+	\label{fig:Criterion_mode}
+\end{figure}
