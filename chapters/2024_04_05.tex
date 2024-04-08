@@ -36,7 +36,8 @@
 
 
 \subsection{PGD}
-
+In order to earn the name PGD, the method should allow to adapt the number of modes on the fly without prior knowledge on the number of modes required to reach convergence. Here a proposition is made based on the energetic loss. This proposition should yield even better results with a loss linked to an error estimation (residual from the mixed formulation for instance).
+\Rq{Note that an error estimator could also be constructed in the integral version instead of relying on the loss alone.}
 \begin{itemize}
 	\item How to get a greedy algorithm without loosing the momentum of the optimiser (changing the architecture)
 	\begin{itemize}
@@ -57,7 +58,12 @@
 	\end{itemize}
 }
 
-\Rqs{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}{For some reason even with a low number of trainable parameters and only the first $n$ modes being used to compute the loss (and therefore its gradient) having a higher $N$ leads to significantly slower execution. This has to be investigated, maybe it will be required to change the architecture to gradually increase the size of the HiDeNN but that would also mean losing the momentum of the optimiser each time a mode is added.}
+\Rqs{Not optimal in term of memory usage: stores a lot of zeros, but should be ok computationally-wise as only $n$ modes are used to compute the loss.}{For some reason even with a low number of trainable parameters and only the first $n$ modes being used to compute the loss (and therefore its gradient) having a higher $N$ leads to significantly slower execution. This has to be investigated, maybe it will be required to change the architecture to gradually increase the size of the HiDeNN but that would also mean losing the momentum of the optimiser each time a mode is added.
+\begin{itemize}
+	\item \textcolor{accentcolor}{\textbf{Update:}} The reason was that updating the parameters still circled through all the parameters (trainable or not). The nice method \code{.add\_param\_group({'params': NewParameters})} allows to initialise the parameters of the optimiser to the trainable parameters only and to dynamically add new parameters to the optimiser when new modes are added.
+	\item \textcolor{accentcolor}{\textbf{WARNING:}} Should remember to \code{AddMode2Optimizer} when adding a mode
+	\item Saving the model during training to revert if needed is more costly (and is only done every K iterations now to avoid loosing to much time saving the (quite large but sparse) model.)
+	\end{itemize}}
 
 
 \subsubsection{Criterion for mode addition}
@@ -79,6 +85,22 @@ In order to choose whether or not to add a mode, a criterion has to be chosen.
 	\label{fig:Criterion_mode}
 \end{figure}
 
+\begin{figure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_Modes_Bi_800.pdf}
+		\caption{Loss decay and mode evolution}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/LossDecay_Modes_Bi_800.pdf}
+		\caption{Loss logarithmic derivative and mode evolution}
+	\end{subfigure}  
+	\caption{Choice of the mode addition criterion for a different case}
+	\label{fig:Criterion_mode2}
+\end{figure}
+
+
 \Rqs{Because we are looking at the lifted J, the very small decade crossing at the end are visible but do not appear in the derivation that is computed on the actual J and not the lifeted version (as the minimum is only known at the end of the minisation process)}{This is very visible when comparing error and lifted energy, see \cref{fig:Impact_lift}. We do not plot the energy but the energy error that tends to 0. But the derivative is computed on the energy... We need an \emph{a priori} error estimator that tends to 0 (that omit discretisation error for instance. Is is the case with the residual error given by the mixed formulation?)}
 
 \begin{figure}
@@ -95,3 +117,5 @@ In order to choose whether or not to add a mode, a criterion has to be chosen.
 	\caption{Impact of lifting}
 	\label{fig:Impact_lift}
 \end{figure}
+
+It should be notted that here both the space and parametric modes are updated during the training which should theoretically be an improvement over the standard PGD method.
