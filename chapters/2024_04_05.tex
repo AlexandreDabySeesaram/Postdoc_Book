@@ -68,7 +68,7 @@ In order to earn the name PGD, the method should allow to adapt the number of mo
 
 \subsubsection{Criterion for mode addition}
 
-In order to choose whether or not to add a mode, a criterion has to be chosen.
+In order to choose whether or not to add a mode, a criterion has to be chosen. Robust error indicators for the adaptative approximation of PGD remains an open question \parencite{nouy_priori_2010}
 
 \begin{figure}
 	\begin{subfigure}[t]{0.5\linewidth}
@@ -118,4 +118,74 @@ In order to choose whether or not to add a mode, a criterion has to be chosen.
 	\label{fig:Impact_lift}
 \end{figure}
 
-It should be notted that here both the space and parametric modes are updated during the training which should theoretically be an improvement over the standard PGD method.
+It should be noted that here both the space and parametric modes are updated during the training which should theoretically be an improvement over the standard PGD method.
+
+
+The final greedy algorithm is summarised in \cref{alg:GreedyPGD}.
+
+\RestyleAlgo{ruled}
+
+%% This is needed if you want to add comments in
+%% your algorithm with \Comment
+\SetKwComment{Comment}{/* }{ */}
+\SetEndCharOfAlgoLine{}
+\begin{algorithm}[hbtp!]
+	\caption{Greedy algorithm}\label{alg:GreedyPGD}
+	\textbf{Inputs: } \code{model}, 
+	\code{optimizer},  
+	\code{\arbitrary{max\_stgn}}, 
+	\code{\arbitrary{threshold}}, 
+	\code{\arbitrary{new\_mode\_threshold}}
+	\textcolor{GreenLMS}{\Comment*[r]{Arbitrary values are highlighted in \arbitrary{red}}}
+	\code{stgn = 0}
+	
+	\code{loss\_decrease = 0 }
+	
+	\code{usefullness = 0}
+	
+		\While(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Training loop \hspace{-6pt}}}){\emph{\code{epoch}} < \emph{\code{max\_epoch}}}{
+		
+    \If{\code{\emph{stgn}} > \code{\emph{\arbitrary{max\_stgn}}} \& \textbf{\emph{not}} \code{\emph{flag\_usefull}} }{
+	Break\textcolor{GreenLMS}{\Comment*[r]{Break if stagnation not solved by previous mode}}
+}
+
+
+		$\mathcal{L} = J\left(\vect{u}\left((\textcolor{BleuLMS!70}{\vect{x}},\textcolor{LGreenLMS}{\left\{\mu^k\right\}}\right),\textcolor{BleuLMS!70}{\vect{x}},\mu\left(x\right)\right)$  \textcolor{GreenLMS}{\Comment*[r]{ Loss evaluation}}
+		
+		\eIf{\code{\emph{epoch>1}}}{
+		\code{loss\_decrease} = $\frac{2\left(\text{\code{L\_old - L}}\right)}{\left|\text{\code{L\_old + L}}\right|}$ 
+		
+		\eIf{$\left| \text{\code{\emph{loss\_decrease}}}\right| < \text{\code{\emph{\arbitrary{threshold}}}} $ }
+		{\code{stgn} +=1 
+		}{
+		\code{stgn}$=0$
+		
+		\If{\emph{\code{L}} $> 0$}{
+			\code{usefullness} +=1 \textcolor{GreenLMS}{\Comment*[r]{ Check that loss decrease is not just a single spike}}
+			
+			\If{\emph{\code{usefullness>\arbitrary{10}} }}{
+			\code{flag\_usefull = True} \textcolor{GreenLMS}{\Comment*[r]{ Previous mode flagged useful}}}  
+		}
+	}
+		
+		\code{L\_old} = L
+		}{L\_old = L}
+		
+		
+		\code{L.backward()}  \textcolor{GreenLMS}{\Comment*[r]{ Gradient of the loss}}
+		\code{optimiser.step()}  \textcolor{GreenLMS}{\Comment*[r]{ Update the models}}
+		
+			\If{\code{\emph{stgn}} > \arbitrary{\code{\emph{new\_mode\_threshold}}}\& \code{\emph{flag\_usefull}} }{
+			\code{model.AddMode()}
+			
+			\code{model.AddMode2Optimizer(optimizer)}
+				
+			\code{flag\_usefull = False} 
+			
+			
+		}
+	}
+\end{algorithm}
+
+
+
