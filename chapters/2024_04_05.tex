@@ -137,31 +137,33 @@ The final greedy algorithm is summarised in \cref{alg:GreedyPGD}.
 	\code{\arbitrary{threshold}}, 
 	\code{\arbitrary{new\_mode\_threshold}}
 	\textcolor{GreenLMS}{\Comment*[r]{Arbitrary values are highlighted in \arbitrary{red}}}
-	\code{stgn = 0}
 	
-	\code{loss\_decrease = 0 }
 	
-	\code{usefullness = 0}
+	\code{stgn = 0} 	\textcolor{GreenLMS}{\Comment*[r]{Number of consecutive stagnating epochs}}
+	
+	\code{loss\_decrease = 0 } 	\textcolor{GreenLMS}{\Comment*[r]{Arbitrary initial value}}
+	
+	\code{usefullness = 0} 	\textcolor{GreenLMS}{\Comment*[r]{Cumulative improving epochs since new mode}}
 	
 		\While(\textcolor{GreenLMS}{\Comment*[r]{\hspace{-5pt}Training loop \hspace{-6pt}}}){\emph{\code{epoch}} < \emph{\code{max\_epoch}}}{
 		
     \If{\code{\emph{stgn}} > \code{\emph{\arbitrary{max\_stgn}}} \& \textbf{\emph{not}} \code{\emph{flag\_usefull}} }{
-	Break\textcolor{GreenLMS}{\Comment*[r]{Break if stagnation not solved by previous mode}}
+	Break\textcolor{GreenLMS}{\Comment*[r]{Break if previous mode did not stop stagnation}}
 }
 
 
 		$\mathcal{L} = J\left(\vect{u}\left((\textcolor{BleuLMS!70}{\vect{x}},\textcolor{LGreenLMS}{\left\{\mu^k\right\}}\right),\textcolor{BleuLMS!70}{\vect{x}},\mu\left(x\right)\right)$  \textcolor{GreenLMS}{\Comment*[r]{ Loss evaluation}}
 		
 		\eIf{\code{\emph{epoch>1}}}{
-		\code{loss\_decrease} = $\frac{2\left(\text{\code{L\_old - L}}\right)}{\left|\text{\code{L\_old + L}}\right|}$ 
+		\code{loss\_decrease} = $\frac{2\left(\text{\code{L\_old - L}}\right)}{\left|\text{\code{L\_old + L}}\right|}$ 	\textcolor{GreenLMS}{\Comment*[r]{Update loss decrease}}
 		
 		\eIf{$\left| \text{\code{\emph{loss\_decrease}}}\right| < \text{\code{\emph{\arbitrary{threshold}}}} $ }
-		{\code{stgn} +=1 
+		{\code{stgn} +=1  	\textcolor{GreenLMS}{\Comment*[r]{Increment stagnation}}
 		}{
-		\code{stgn}$=0$
+		\code{stgn}$=0$  	\textcolor{GreenLMS}{\Comment*[r]{Reset stagnation}}
 		
 		\If{\emph{\code{L}} $> 0$}{
-			\code{usefullness} +=1 \textcolor{GreenLMS}{\Comment*[r]{ Check that loss decrease is not just a single spike}}
+			\code{usefullness} +=1 \textcolor{GreenLMS}{\Comment*[r]{ Check that loss decrease is more than a single spike}}
 			
 			\If{\emph{\code{usefullness>\arbitrary{10}} }}{
 			\code{flag\_usefull = True} \textcolor{GreenLMS}{\Comment*[r]{ Previous mode flagged useful}}}  
@@ -176,9 +178,9 @@ The final greedy algorithm is summarised in \cref{alg:GreedyPGD}.
 		\code{optimiser.step()}  \textcolor{GreenLMS}{\Comment*[r]{ Update the models}}
 		
 			\If{\code{\emph{stgn}} > \arbitrary{\code{\emph{new\_mode\_threshold}}}\& \code{\emph{flag\_usefull}} }{
-			\code{model.AddMode()}
+			\code{model.AddMode()} 	\textcolor{GreenLMS}{\Comment*[r]{Add new mode}}
 			
-			\code{model.AddMode2Optimizer(optimizer)}
+			\code{model.AddMode2Optimizer(optimizer)} 	\textcolor{GreenLMS}{\Comment*[r]{Add the new parameters to the optimizer}}
 				
 			\code{flag\_usefull = False} 
 			
