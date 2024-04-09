@@ -98,3 +98,9 @@ Such a constraint can then be prescribed before evaluating the NN within the tra
 \end{algorithm}
 \newpage
 \Rqs{The evlaluation of the stress is then done using nodale stress values in the \code{model\_stress} that are consistant with the boundary conditions.}{Such an implementation would also easily allow dealing with changing normal during training for large strains for instance.}
+
+\textbf{\textcolor{accentcolor}{Question:}} The stress state is not fully defined by the Neumann boundary condition, \emph{i.e.} part of it comes from the admissibility and constitutive relation which is only verified at convergence. Prescribing in hard the remaining stress component from the displacement might help. 
+
+\textbf{\textcolor{accentcolor}{Idea:}} give all our knowledge to the NN instead of learning what we already know. 
+
+\textbf{\textcolor{accentcolor}{Question:}} In this idea, should we prescribe all nodal stress tensors except from where Neumann BCs are set ?
