@@ -2,7 +2,7 @@
 
 
 \begin{chapabstract}
-	No meeting but note of ideas and discussions
+	No meeting but notes, ideas and discussions
 \end{chapabstract}
 
 
@@ -15,13 +15,14 @@
 	\begin{itemize}
 		\item Play with the weight of the PDE and CRE terms in the loss to alternate between solving the pde or the constitutive relation
 	\end{itemize}
+	\item Prescribe stress state using the constitutive relation? see \cref{chap:MixedFormulation} in \cref{sec:NeumannMixed}.
 \end{itemize}
 
 \section{Parametrisation}
 
 \subsection{Orthogonality}
 \begin{itemize}
-	\item GS does not help, somehow hard to cancel out modes (b puting them to zero or the parameters modes associated with them) hence better to juste have redundant good modes than orthogonal noise
+	\item GS does not help, somehow hard to cancel out modes (by putting them to zero or the parameters modes associated with them) hence better to just have redundant good modes than orthogonal noise
 	\begin{itemize}
 		\item Put the orthogonalisation outside of forward as the forward function is not called during the training
 	\end{itemize}
@@ -191,3 +192,5 @@ The final greedy algorithm is summarised in \cref{alg:GreedyPGD}.
 
 \Rqs{The	\code{\arbitrary{max\_stgn}} and \code{\arbitrary{new\_mode\_threshold}} hyperparameters do not appear to change the behaviour be they chosen from $\simeq 5 - 100$ which is a good point. The real hyperparameter is the \code{\arbitrary{threshold}}.}{Could replace the first two by a hard threshold as classically done with a convergence criterion. Just have to be carefull with ``False'' imprvement due to new more when there is just a spike and not a substantive improvement.} 
 
+
+\textbf{\textcolor{accentcolor}{TODO:}} chack that it make sense that the usefullness has to get to 10 when stagnation max is only 5....
