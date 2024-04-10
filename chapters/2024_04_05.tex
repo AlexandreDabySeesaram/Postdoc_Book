@@ -193,4 +193,26 @@ The final greedy algorithm is summarised in \cref{alg:GreedyPGD}.
 \Rqs{The	\code{\arbitrary{max\_stgn}} and \code{\arbitrary{new\_mode\_threshold}} hyperparameters do not appear to change the behaviour be they chosen from $\simeq 5 - 100$ which is a good point. The real hyperparameter is the \code{\arbitrary{threshold}}.}{Could replace the first two by a hard threshold as classically done with a convergence criterion. Just have to be carefull with ``False'' imprvement due to new more when there is just a spike and not a substantive improvement.} 
 
 
-\textbf{\textcolor{accentcolor}{TODO:}} chack that it make sense that the usefullness has to get to 10 when stagnation max is only 5....
+\textbf{\textcolor{accentcolor}{Verification:}} check that it make sense that the usefulness has to get to 10 when stagnation max is only 5....
+
+\textbf{\textcolor{accentcolor}{Answer:}} Yes it does, if it stops it means that its stagnating thus usefulness is not improving. 
+
+
+\section{Literature review}
+
+I cam across the work of \cite{lu_adaptive_2018} that seems very related to our work. It deals with 
+\begin{itemize}
+	\item Adaptative sampling in the parameter space
+	\begin{itemize}
+		\item But uses an \emph{a posteriori} refinement approach
+		\item Needed to overcome uniform sampling in HD curse of dimensionality 
+	\end{itemize}
+	\item Geometry changes
+	\begin{itemize}
+		\item Using morphing techniques from introduced by \cite{galland_global_2011}
+	\end{itemize}
+	\item High-order PGD
+	\begin{itemize}
+		\item Only for snapshot compression
+	\end{itemize}
+\end{itemize}
