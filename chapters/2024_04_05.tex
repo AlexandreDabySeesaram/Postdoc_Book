@@ -16,6 +16,7 @@
 		\item Play with the weight of the PDE and CRE terms in the loss to alternate between solving the pde or the constitutive relation
 	\end{itemize}
 	\item Prescribe stress state using the constitutive relation? see \cref{chap:MixedFormulation} in \cref{sec:NeumannMixed}.
+	\item Use multi-scale training in a similar manner as Domain Decomposition to spread information from the boundary conditions on the whole surface and remove the issue from the ``locality''of the influence of the nodes as trainable parameters (That each affect very few sampling points).
 \end{itemize}
 
 \section{Parametrisation}
@@ -214,5 +215,15 @@ I cam across the work of \cite{lu_adaptive_2018} that seems very related to our 
 	\item High-order PGD
 	\begin{itemize}
 		\item Only for snapshot compression
+	\end{itemize}
+\end{itemize}
+
+
+\section{TODO}
+\begin{itemize}
+	\item Try the level-set function on coarse mesh parametrisation of the space clustering.
+	\begin{itemize}
+		\item First in 1D
+		\item Then rely on the 2D developments to extend in 2D
 	\end{itemize}
 \end{itemize}
