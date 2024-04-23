@@ -90,16 +90,17 @@ The solution is sought after as the pair $\left(\vect{u_{NN}},\sigm_{NN}\right) 
 \end{equation}
 by minimising a cost function 
 \begin{equation}
-	\mathcal{L} = \underbrace{\Vert \text{\textbf{div}}\left(\sigm_{NN}\right)+\vect{f}\Vert}_{\mathcal{L}_{\text{PDE}}} + \underbrace{ \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{\ftensor{K}}}_{\mathcal{L}_{\text{const}}}
+	\mathcal{L} = \underbrace{\Vert \text{\textbf{div}}\left(\sigm_{NN}\right)+\vect{f}\Vert}_{\mathcal{L}_{\text{PDE}}} + \underbrace{ \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{2}}_{\mathcal{L}_{\text{const}}}
 \end{equation} consisting of a constitutive error term $\mathcal{L}_{\text{const}}$ and a PDE residual term $\mathcal{L}_{\text{PDE}}$.
 \subsection{Constitutive error}
 \paragraph{Definition}
 In the mixed formulation, the interpolated stress $\sigm_{NN} \in \mathcal{H}\left(\text{div}\right)$ is divergence free while the displacement-derived stress $\sigm\left(\vect{u_{NN}}\right) \notin \mathcal{H}\left(\text{div}\right)$ is not as $\vect{u_{NN}}\in \mathcal{H}^1\left(\Omega\right)$ only. Static admissibility can only be weakly satisfied and the strong form of the equilibrium is not satisfied by the displacement field. The constitutive error
 \begin{equation}
-	\Psi\left(\vect{u_{NN}},\sigm_{NN}\right) = \frac{1}{2} \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{\ftensor{K}} = \frac{1}{2} \mathcal{L}_{\text{const}}
+	\Psi\left(\vect{u_{NN}},\sigm_{NN}\right) = \frac{1}{2} \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{\ftensor{K}} \neq \frac{1}{2} \mathcal{L}_{\text{const}}
 	\label{eq:EC}
 \end{equation}
-not being zero at convergence illustrates that idea.
+not being zero at convergence illustrates that idea. 
+\Rq{If the constitutive term in the loss is computed using a MSE, it differs from the CRE computed with the energetic norm. In a tchnical aspect a difference lies in the fact that the size of the element is accounted for in via the jacobian of the elements in the intergal form while the sum of the MSE depends strongly on the sampling points where the error is estimated.}
 
 \paragraph{Decoupling of the two fields}
 
@@ -107,23 +108,24 @@ not being zero at convergence illustrates that idea.
 	\begin{split}
 			2~\Psi\left(\vect{u},\sigm\right) & =  \intV \left(\sigm - \ftensor{K}:\eps\left(\vect{u}\right)\right) : \ftensor{K}^-{-1}:\left(\sigm - \ftensor{K}:\eps\left(\vect{u}\right)\right) \dV\\ 
 			& = \underbrace{\intV \sigm: \ftensor{K}^{-1}: \sigm \dV}_{2U\left(\sigm\right)} + \underbrace{\intV \eps\left(\vect{u}\right):\ftensor{K}:\eps\left(\vect{u}\right) \dV}_{2U\left(\vect{u}\right)}+ 2\intV\sigm:\eps\left(\vect{u}\right)\dV\\
-			& = 2~ U\left(\sigm\right) +2~ U\left(\vect{u}\right) - 2\intV\sigm:\eps\left(\vect{u}\right)\dV\\
+			& = 2~ U\left(\sigm\right) +2~ U\left(\vect{u}\right) - 2\intV\sigm:\eps\left(\vect{u}\right)\dV.\\
 	\end{split}
 \end{equation}
-with 
+If we then inject the equilibrium 
 \begin{equation}
-	\intV\sigm:\eps\left(\vect{u}\right)~\dV = \intS \left(\sigm\vect{n}\right) \cdot \vect{u}~\dS +  \intS \vect{F_d}\cdot \vect{u} ~\dS +\intV \vect{f_v}\cdot\vect{u}~\dV,
+	\intV\sigm:\eps\left(\vect{u}\right)~\dV = \intS \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS +  \intS \vect{F_d}\cdot \vect{u} ~\dS +\intV \vect{f_v}\cdot\vect{u}~\dV,
 \end{equation}
-hence
+in the previous results the constitutive error reads 
 \begin{equation}
 		\begin{split}
-			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intS \left(\sigm\vect{n}\right) \cdot \vect{u}~\dS }_{E_p\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intS \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}\\
+			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intSd \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS }_{E_p\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intSn \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}\\
 			& =E_p\left(\sigm\right)+E_p\left(\vect{u}\right).
 		\end{split}
 \end{equation}
-
-Therefore, minimising the constitutive part of the loss function consists in finding 
+\Rq{We would then get a constitutive error that accounts for both the CRE and the equilibrium, thus there would be no need for the PDE term in the loss.}
+Therefore, minimising the constitutive error consists in finding 
 
 \begin{equation}
-	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right) 
+	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right),
 \end{equation}
+But this statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
