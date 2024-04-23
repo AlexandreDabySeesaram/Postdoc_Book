@@ -6,6 +6,7 @@
 % \usepackage{microtype}
 % \usepackage[capitalise,noabbrev,nameinlink]{cleveref}
 \usepackage{amssymb}
+\usepackage{amsmath}
 
 \usepackage[labelfont={bf,color=accentcolor}]{caption}
 \DeclareCaptionLabelSeparator{bullet}{~$\bullet$~}
@@ -34,6 +35,15 @@
 % Usefull commands
 
 \newcommand{\code}[1]{\texttt{#1}}
+
+%Math
+\DeclareMathOperator*{\argmin}{arg\,min} % Jan Hlavacek
+\DeclareMathOperator*{\argmax}{arg\,max} % Jan Hlavacek
+\newcommand{\dV}[0]{\mathrm{d}\Omega}
+\newcommand{\intV}[0]{\int_{\Omega}}
+
+\newcommand{\dS}[0]{\mathrm{d}A}
+\newcommand{\intS}[0]{\int_{\partial \Omega}}
 
 % Operators
 \newcommand{\matrice}[1]{\boldsymbol{#1}}
