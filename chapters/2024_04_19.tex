@@ -84,7 +84,7 @@ The solution is sought after as the pair $\left(\vect{u_{NN}},\sigm_{NN}\right) 
 	\begin{cases}
 	\mathcal{U} = \left\{\vect{u} \; | \; \vect{u}\in \mathcal{H}^1\left(\Omega\right)\text{,} 
 	\vect{u} = \vect{u}_d \text{ on } \partial \Omega_d \right\}, \\
-		\mathcal{S} = \left\{\sigm \; | \; \sigm\in \mathcal{H}\left(\text{div}\right)\text{,} 
+		\mathcal{S} = \left\{\sigm \; | \; \sigm\in \mathcal{H}\left(\text{div}\right)\text{,} \text{\textbf{div}}\left(\sigm\right)+\vect{f_v} = \vect{0}\text{ and }
 	\sigm\vect{n} = \vect{F}_d \text{ on } \partial \Omega_N \right\}, 
 	\end{cases}
 \end{equation}
@@ -118,7 +118,7 @@ If we then inject the equilibrium
 in the previous results the constitutive error reads 
 \begin{equation}
 		\begin{split}
-			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intSd \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS }_{E_p\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intSn \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}\\
+			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intSd \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS }_{E_p\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intSn \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}.\\
 			& =E_p\left(\sigm\right)+E_p\left(\vect{u}\right).
 		\end{split}
 \end{equation}
@@ -129,3 +129,5 @@ Therefore, minimising the constitutive error consists in finding
 	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right),
 \end{equation}
 But this statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
+
+\Rq{The two decoupled optimisation problem can be solved with two smaller optimiser as opposed to using one big optimiser.}
