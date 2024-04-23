@@ -122,12 +122,30 @@ in the previous results the constitutive error reads
 			& =E_p\left(\sigm\right)+E_p\left(\vect{u}\right).
 		\end{split}
 \end{equation}
-\Rq{We would then get a constitutive error that accounts for both the CRE and the equilibrium, thus there would be no need for the PDE term in the loss.}
+
 Therefore, minimising the constitutive error consists in finding 
 
 \begin{equation}
 	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right),
 \end{equation}
-But this statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
+\Rq{The two decoupled optimisation problems can be solved with two smaller optimiser as opposed to using one big optimiser.}
+This decoupled statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
 
-\Rq{The two decoupled optimisation problem can be solved with two smaller optimiser as opposed to using one big optimiser.}
+
+
+\Rqs{Solving the displacement problem is \textcolor{accentcolor}{\textbf{exactly}} the same as minimising the integral loss. Then to get an admissible stress the idea is to solve the stress related minimisation problem (second constitutive problem + PDE term) that leads to a stress that is statically admissible. Before decoupling (which might be harder in a non-linear case), the problem reads:
+\begin{equation}
+	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{H}\left(\text{div}\right)} \left(\Psi\left(\vect{u},\sigm\right)+\mathcal{L}_{\text{PDE}}\right) 
+		\label{eq:coupledMixedmini}
+\end{equation}
+and after decoupling the problem becomes:
+\begin{equation}
+	\begin{split}
+		\vect{u_{NN}} & = \argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right) \\ 
+		\sigm_{NN} & =  \argmin_{\sigm \in \mathcal{H}\left(\text{div}\right)} E_p\left(\sigm\right) + \mathcal{L}_{\text{PDE}},
+	\end{split}
+	\label{eq:decoupledMixedmini}
+\end{equation}
+the first equation of \cref{eq:decoupledMixedmini} being the exact same as the one in the intergal formulation.}{In \cref{eq:coupledMixedmini}, a question remains: does it make sense to compute $$\sigm - \ftensor{K}:\eps\left(\vect{u}\right)$$ with $\sigm \in \mathcal{H}\left(\text{div}\right)$ and $\ftensor{K}:\eps\left(\vect{u}\right) \in \mathcal{L}^2\left(\Omega\right)$}
+
+	
