@@ -128,7 +128,7 @@ Therefore, minimising the constitutive error consists in finding
 \begin{equation}
 	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right),
 \end{equation}
-\Rq{The two decoupled optimisation problems can be solved with two smaller optimiser as opposed to using one big optimiser.}
+\Rq{The two decoupled optimisation problems can be solved with two smaller optimisers as opposed to using one big optimiser.}
 This decoupled statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
 
 
@@ -146,6 +146,8 @@ and after decoupling the problem becomes:
 	\end{split}
 	\label{eq:decoupledMixedmini}
 \end{equation}
-the first equation of \cref{eq:decoupledMixedmini} being the exact same as the one in the intergal formulation.}{In \cref{eq:coupledMixedmini}, a question remains: does it make sense to compute $$\sigm - \ftensor{K}:\eps\left(\vect{u}\right)$$ with $\sigm \in \mathcal{H}\left(\text{div}\right)$ and $\ftensor{K}:\eps\left(\vect{u}\right) \in \mathcal{L}^2\left(\Omega\right)$}
+the first equation of \cref{eq:decoupledMixedmini} being the exact same as the one in the intergal formulation.}{In \cref{eq:coupledMixedmini}, a question remains: does it make sense to compute $$\sigm - \ftensor{K}:\eps\left(\vect{u}\right)$$ with $\sigm \in \mathcal{H}\left(\text{div}\right)$ and $\left(\ftensor{K}:\eps\left(\vect{u}\right)\right) \in \mathcal{L}^2\left(\Omega\right)$. I would assume that yes and that the discrepencies accounts for the discretisation error.}
+
+\paragraph{Partial conclusion} An idea would at least be to use a proper integral instead of the MSE to get rid of the arbitrary choice of sampling points and the dependence to the node density and so on. 
 
 	
