@@ -108,7 +108,7 @@ The solution is sought after as the pair $\left(\vect{u_{NN}},\sigm_{NN}\right) 
 \end{equation}
 by minimising a cost function 
 \begin{equation*}
-	\mathcal{L} = \underbrace{\Vert \text{\textbf{div}}\left(\sigm_{NN}\right)+\vect{f}\Vert_2^2}_{\mathcal{L}_{\text{PDE}}} + \underbrace{ \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert^2_{2}}_{\mathcal{L}_{\text{const}}}
+	\mathcal{L} = L^2\underbrace{\Vert \text{\textbf{div}}\left(\sigm_{NN}\right)+\vect{f}\Vert_2^2}_{\mathcal{L}_{\text{PDE}}} + \underbrace{ \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert^2_{2}}_{\mathcal{L}_{\text{const}}}
 \end{equation*} consisting of a constitutive error term $\mathcal{L}_{\text{const}}$ and a PDE residual term $\mathcal{L}_{\text{PDE}}$.
 \subsection{Constitutive error}
 \paragraph{Definition}
