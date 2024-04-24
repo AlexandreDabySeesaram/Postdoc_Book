@@ -58,7 +58,7 @@ The iso-stress appears smoother with r-adaptivity as the chequerboard effect is 
 
 \begin{itemize}
 	\item For it to be very efficient we must find a way to do \textit{h-adaptivity}
-	\item Instead of uniform refinements, use local refinement (Split T3 elements where the density increased passed a threshold)
+	\item Instead of uniform refinements, use local refinement (Split T3 elements where the increase in density exceeds a threshold)
 	\begin{itemize}
 		\item If no recombination, should be fairly easy
 	\end{itemize}
@@ -76,9 +76,27 @@ An idea would be to split the elements whose indexes $I_{ds}$ are
 	\item If global refinement needed, set max element size as average current element size on the locally refined mesh.
 \end{itemize}
 
+\Rqs{That would allow to get rid of the ``Mesh initialisation'' difficulty during refinement if an external mesher is not called for the local refinements.}{
+	\begin{itemize}
+		\item Do we add nodes at every iterations or only if velocity of density changes exceeds a given threshold?
+		\item Do we fix a threshold regarding the max ratio of jacobians above which a global refinement is made ?
+	\end{itemize}}
+
 
 \newpage
 \section{Stress admissibility}
+\begin{wrapfigure}{r}{0.45\textwidth}
+	\vspace{-60pt}
+	\flushright
+	\includegraphics[width=0.6\linewidth]{Figures/Omega.pdf}
+	\caption{Reference problem}
+	\label{fig:Body}
+\end{wrapfigure}
+%\begin{figure}
+%	\includegraphics[width=\linewidth]{Figures/Omega.pdf}
+%	\caption{Reference problem}
+%	\label{fig:Body}
+%\end{figure}
 The solution is sought after as the pair $\left(\vect{u_{NN}},\sigm_{NN}\right) \in \mathcal{U}  \times \mathcal{S}$, with
 \begin{equation}
 	\begin{cases}
@@ -89,18 +107,26 @@ The solution is sought after as the pair $\left(\vect{u_{NN}},\sigm_{NN}\right) 
 	\end{cases}
 \end{equation}
 by minimising a cost function 
-\begin{equation}
+\begin{equation*}
 	\mathcal{L} = \underbrace{\Vert \text{\textbf{div}}\left(\sigm_{NN}\right)+\vect{f}\Vert}_{\mathcal{L}_{\text{PDE}}} + \underbrace{ \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{2}}_{\mathcal{L}_{\text{const}}}
-\end{equation} consisting of a constitutive error term $\mathcal{L}_{\text{const}}$ and a PDE residual term $\mathcal{L}_{\text{PDE}}$.
+\end{equation*} consisting of a constitutive error term $\mathcal{L}_{\text{const}}$ and a PDE residual term $\mathcal{L}_{\text{PDE}}$.
 \subsection{Constitutive error}
 \paragraph{Definition}
 In the mixed formulation, the interpolated stress $\sigm_{NN} \in \mathcal{H}\left(\text{div}\right)$ is divergence free while the displacement-derived stress $\sigm\left(\vect{u_{NN}}\right) \notin \mathcal{H}\left(\text{div}\right)$ is not as $\vect{u_{NN}}\in \mathcal{H}^1\left(\Omega\right)$ only. Static admissibility can only be weakly satisfied and the strong form of the equilibrium is not satisfied by the displacement field. The constitutive error
 \begin{equation}
-	\Psi\left(\vect{u_{NN}},\sigm_{NN}\right) = \frac{1}{2} \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert_{\ftensor{K}} \neq \frac{1}{2} \mathcal{L}_{\text{const}}
+	\Psi\left(\vect{u_{NN}},\sigm_{NN}\right) = \frac{1}{2} \Vert \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right) \Vert^2_{\ftensor{K}} \neq \frac{1}{2} \mathcal{L}_{\text{const}}
 	\label{eq:EC}
 \end{equation}
 not being zero at convergence illustrates that idea. 
-\Rq{If the constitutive term in the loss is computed using a MSE, it differs from the CRE computed with the energetic norm. In a tchnical aspect a difference lies in the fact that the size of the element is accounted for in via the jacobian of the elements in the intergal form while the sum of the MSE depends strongly on the sampling points where the error is estimated.}
+\Rq{If the constitutive term in the loss is computed using a MSE, it differs from the CRE computed with the energetic norm. In a technical aspect a difference lies in the fact that the size of the element is accounted for in via the jacobian of the elements in the intergal form while the sum of the MSE depends strongly on the sampling points where the error is estimated. If we assume that the sampling matches the integration points on the structure:
+\begin{equation}
+	\begin{cases}
+			\mathcal{L}_{\text{const}} = \frac{1}{N_g} \sum_{i=1}^{N_g} \left(\matrice{\delta}\sigm\left(\vect{x_i}\right)\right)^2 \\
+				2	\Psi\left(\vect{u_{NN}},\sigm_{NN}\right) = \sum_{i=1}^{N_g} \left(\matrice{\delta}\sigm\left(\vect{x_i}\right):\ftensor{K}:\matrice{\delta}\sigm\left(\vect{x_i}\right)\text{det}\left(J\left(x_i\right)\right)\omega_i\right),
+	\end{cases}
+\end{equation}
+with $\matrice{\delta}\sigm = \sigm_{NN} - \ftensor{K}:\eps\left(\vect{u_{NN}}\right)$.
+}
 
 \paragraph{Decoupling of the two fields}
 
@@ -146,7 +172,7 @@ and after decoupling the problem becomes:
 	\end{split}
 	\label{eq:decoupledMixedmini}
 \end{equation}
-the first equation of \cref{eq:decoupledMixedmini} being the exact same as the one in the intergal formulation.}{In \cref{eq:coupledMixedmini}, a question remains: does it make sense to compute $$\sigm - \ftensor{K}:\eps\left(\vect{u}\right)$$ with $\sigm \in \mathcal{H}\left(\text{div}\right)$ and $\left(\ftensor{K}:\eps\left(\vect{u}\right)\right) \in \mathcal{L}^2\left(\Omega\right)$. I would assume that yes and that the discrepencies accounts for the discretisation error.}
+the first equation of \cref{eq:decoupledMixedmini} being the exact same as the one in the intergal formulation.}{In \cref{eq:coupledMixedmini}, a question remains: does it make sense to compute $$\sigm - \ftensor{K}:\eps\left(\vect{u}\right)$$ with $\sigm \in \mathcal{H}\left(\text{div}\right)$ and $\left(\ftensor{K}:\eps\left(\vect{u}\right)\right) \in \mathcal{L}^2\left(\Omega\right)$. I would assume that yes and that the discrepencies account for the discretisation error.}
 
 \paragraph{Partial conclusion} An idea would at least be to use a proper integral instead of the MSE to get rid of the arbitrary choice of sampling points and the dependence to the node density and so on. 
 
