@@ -34,6 +34,7 @@ In order to speed-up the convergence process the transfer learning capabilities 
 
 The automation of the multi-scale training rely an a convergence criterion of the mesh's size. A first idea is to compute the value of the maximum strain of the last converged mesh and compare it to the value of the previous converged mesh. If stagnation is met then training is stopped otherwise a refinement is performed and the previous coarser solution is used to initialise the finer solution.
 
+\paragraph{Conclusion} It works fine but doubling (is there a robust better choice?) the number of nodes every time quickly increases a lot the number of nodes. Should look at local refinement instead.
 
 \subsubsection{Mesh r-adaptivity}
 
@@ -82,8 +83,33 @@ An idea would be to split the elements whose indexes $I_{ds}$ are
 		\item Do we fix a threshold regarding the max ratio of jacobians above which a global refinement is made ?
 	\end{itemize}}
 
+\subsubsection{Refinement strategy}
 
-\newpage
+\paragraph{Naive strategy} Local refinement performed by adding a node at the barycentre and split triangle into three new triangles. 
+
+\begin{itemize}
+	\item I thought that because the other nodes are somehow moving, refining only the inside of the element and not the edges would be OK but creating those long edges triangle very often lead to bad meshes that are not improving later
+	\item For an unknown reason thenew point rarely cross the old element boundaries (which is good) but the do get squished quite often.
+	\item We could:
+	\begin{itemize}
+		\item Keep this local refinement method
+		\begin{itemize}
+			\item Freeze mesh after refinement
+			\item Find a regularisation
+		\end{itemize}
+			\item Consider splitting the edges 
+				\begin{itemize}
+				\item More challenging technically as it would not be local any more element-wise (hard to vectorise)
+				\item Or it would mean allowing "hanging nodes"
+				\item Difficulty: How to handle geometric boundary ? Re-meshing is necessary to incorporate the geometry
+					\begin{itemize}
+					\item Switch case if close to boundaries then add node at the barycentre
+				\end{itemize}
+			\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+
 \section{Stress admissibility}
 \begin{wrapfigure}{r}{0.45\textwidth}
 	\vspace{-60pt}
