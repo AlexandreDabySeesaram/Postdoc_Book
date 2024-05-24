@@ -33,6 +33,11 @@
 {\usebibmacro{postnote}}
 
 % Usefull commands
+\usepackage{neuralnetwork}
+
+\newcommand{\xin}[2]{$\Psi_#2$}
+\newcommand{\xout}[2]{$\hat \Psi_#2$}
+\newcommand{\xhid}[2]{$\mu_#2$}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -62,6 +67,7 @@
 \newcommand{\depsp}[0]{\dot{\underline{\underline{\varepsilon}}}^p} % version 1
 \newcommand{\dcepsp}[0]{\hat{\dot{\underline{\underline{\varepsilon}}}}^p} % version 1
 \newcommand{\tbr}[1]{\llbracket\mkern-5mu\llbracket #1 \rrbracket\mkern-5mu\rrbracket}
+\renewcommand{\d}{\mathrm{d}}
 
 %%% Colours
 \definecolor{BleuLMS}{RGB}{1, 66, 106}

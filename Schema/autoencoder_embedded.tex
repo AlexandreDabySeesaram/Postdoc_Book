@@ -1,0 +1,20 @@
+	\begin{neuralnetwork}[height=8]
+	\tikzstyle{input neuron}=[neuron, fill=GreenLMS, text=white];
+	\tikzstyle{output neuron}=[neuron, fill=accentcolor, text=white];
+	\tikzstyle{hidden neuron}=[neuron, draw = LGreenLMS, thick, fill=LGreenLMS!25, text=LGreenLMS!60!black];
+	
+	\inputlayer[count=8, bias=false, title=Input Layer, text=\xin]
+	
+	\hiddenlayer[count=5, bias=false]
+	\linklayers
+	
+	\hiddenlayer[count=3, bias=false, title=Latent space \\ $\left\{\mu_i\right\}_{i=\llbracket 1, \beta \rrbracket}$,text=\xhid]
+	\linklayers
+	
+	\hiddenlayer[count=5, bias=false]
+	\linklayers
+	
+	\outputlayer[count=8, title=Output Layer, text=\xout]
+	\linklayers
+	
+\end{neuralnetwork}

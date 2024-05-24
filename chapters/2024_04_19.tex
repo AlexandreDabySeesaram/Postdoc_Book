@@ -1,5 +1,5 @@
  \chapter[The 19$^{\text{th}}$ of April 2024 -2D]{2D}
-
+\label{chap:2DPotentialEnergy}
 \begin{chapabstract}
 	No meeting but notes, ideas and discussions
 \end{chapabstract}
@@ -11,9 +11,9 @@
 
 \subsection{Training}
 \subsubsection{Integral evaluation}
-For the integral computation of the loss during the training, no input is required as the only evaluation points for the space quantities are evaluated at the integration points that only depends on the mesh and the order of the elements. 
+For the integral computation of the loss during the training, no input is required as the space quantities are evaluated at the integration points that only depends on the mesh and the order of the elements. 
 
-\Rqs{For the automatic differenciation to be available when computing the loss, the inverse mapping $\mathcal{M}^{-1}$ from the real coordinates to the reference coordinate is used when interpolating the displacement. That allows any derivative to be computed using the automated tools later in the loss. The strain could be directly be derived but that might be a limitation for most complex loss functions.}{The difference between evaluation and training are easily handled by calling the methods
+\Rqs{For the automatic differenciation to be available when computing the loss, the inverse mapping $\mathcal{M}^{-1}$ from the real coordinates to the reference coordinate is used when interpolating the displacement. That allows any derivative to be computed using the automated tools later in the loss. \textbf{The shape functions (that are identical) are computed twice, one fore the area coordinates and once for the displacement interpolation.}The strain could be directly be derived but that might be a limitation for most complex loss functions.}{The difference between evaluation and training are easily handled by calling the methods
 \begin{itemize}
 	\item \code{model.train()}
 	\item \code{model.eval()}
@@ -23,7 +23,7 @@ For the integral computation of the loss during the training, no input is requir
 	\begin{cases}
 		\vect{x_g} = \sum\limits_{i = 1}^{N_e} N_i(\vect{\xi_g})\vect{x_i} \\
 		\vect{u}\left(\vect{x_g}\right) =  \sum\limits_{i = 1}^{N_e} N_i\left(\underbrace{\mathcal{M}^{-1}\left(\vect{x_g}\right)}_{=\vect{\xi_g}}\right)\vect{u_i } \\[7pt]
-		\text{det}\left(J\left(\vect{x_g}\right)\right) = \text{det}\left(\frac{\mathrm{d}\vect{\xi_g}}{\mathrm{d}\vect{x_g}}\right)
+		\text{det}\left(J\left(\vect{x_g}\right)\right) = \text{det}\left(\frac{\mathrm{d}\mathcal{M}^{-1}\left(\vect{x_g}\right)}{\mathrm{d}\vect{x_g}}\right)
 	\end{cases}
 \end{equation}
 
@@ -32,7 +32,7 @@ For the integral computation of the loss during the training, no input is requir
 In order to speed-up the convergence process the transfer learning capabilities of the HiDeNN framework (described in \cref{chap:Transfer_learning} for the parametric case) are used to spread global information from a coarse scale as an initialisation of a finer scale. Such a training merges the mesh convergence analysis with the computation of a solution at a lower cost, ensuring the quality of the final solution regarding discretisation error. 
 
 
-The automation of the multi-scale training rely an a convergence criterion of the mesh's size. A first idea is to compute the value of the maximum strain of the last converged mesh and compare it to the value of the previous converged mesh. If stagnation is met then training is stopped otherwise a refinement is performed and the previous coarser solution is used to initialise the finer solution.
+The automation of the multi-scale training relies an a convergence criterion of the mesh's size. A first idea is to compute the value of the maximum strain of the last converged mesh and compare it to the value of the previous converged mesh. If stagnation is met then training is stopped otherwise a refinement is performed and the previous coarser solution is used to initialise the finer solution.
 
 \paragraph{Conclusion} It works fine but doubling (is there a robust better choice?) the number of nodes every time quickly increases a lot the number of nodes. Should look at local refinement instead.
 
@@ -70,9 +70,15 @@ The iso-stress appears smoother with r-adaptivity as the chequerboard effect is 
 An idea would be to split the elements whose indexes $I_{ds}$ are
 
 \begin{equation}
-	I_{ds} = \argmax_{e}~\frac{\mathrm{d}}{\mathrm{d}t} \left[ \text{det}\left(J\left(x^e_g\right)\right)\right]
+	I_{ds} = \argmax_{e}~\frac{\frac{\mathrm{d}}{\mathrm{d}t} \left[ \text{det}\left(J\left(x^e_g\right)\right)\right]}{\text{det}\left(J\left(x^e_g\right)\right)}
 \end{equation}
 
+or that satisfies 
+
+\begin{equation}
+	I_{ds} = \argmax_{e}~\frac{ \left[ \text{det}\left(J\left(x^e_g\right)\right) - \text{det}\left(J_0\left(x^e_g\right)\right) \right]}{\text{det}\left(J_0\left(x^e_g\right)\right)}, 
+\end{equation}
+with $\text{det}\left(J_0\left(x^e_g\right)\right)$ the initial Jacobian before any r-adaptivity.
 \begin{itemize}
 	\item If global refinement needed, set max element size as average current element size on the locally refined mesh.
 \end{itemize}
@@ -170,15 +176,15 @@ If we then inject the equilibrium
 in the previous results the constitutive error reads 
 \begin{equation}
 		\begin{split}
-			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intSd \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS }_{E_p\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intSn \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}.\\
-			& =E_p\left(\sigm\right)+E_p\left(\vect{u}\right).
+			\Psi\left(\vect{u},\sigm\right)  & = \underbrace{U\left(\sigm\right) - \intSd \left(\sigm\vect{n}\right) \cdot \vect{u_d}~\dS }_{E_c\left(\sigm\right)} +\underbrace{U\left(\vect{u}\right) -  \intSn \vect{F_d}\cdot \vect{u} ~\dS -\intV \vect{f_v}\cdot\vect{u}~\dV}_{E_p\left(\vect{u}\right)}.\\
+			& =E_c\left(\sigm\right)+E_p\left(\vect{u}\right).
 		\end{split}
 \end{equation}
 
 Therefore, minimising the constitutive error consists in finding 
 
 \begin{equation}
-	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_p\left(\sigm\right)\right),
+	\left(\vect{u_{NN}},\sigm_{NN}\right) = \argmin_{\vect{u}\in \mathcal{U}, \sigm \in \mathcal{S}} \left(\Psi\left(\vect{u},\sigm\right)\right) =  \left(\argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right),\argmin_{\sigm\in \mathcal{S}}E_c\left(\sigm\right)\right),
 \end{equation}
 \Rq{The two decoupled optimisation problems can be solved with two smaller optimisers as opposed to using one big optimiser.}
 This decoupled statement does not hold with the $\mathcal{L}^2$-norm used in the actual loss or without using the equilibrium.
@@ -194,7 +200,7 @@ and after decoupling the problem becomes:
 \begin{equation}
 	\begin{split}
 		\vect{u_{NN}} & = \argmin_{\vect{u}\in \mathcal{U}}E_p\left(\vect{u}\right) \\ 
-		\sigm_{NN} & =  \argmin_{\sigm \in \mathcal{H}\left(\text{div}\right)} E_p\left(\sigm\right) + \mathcal{L}_{\text{PDE}},
+		\sigm_{NN} & =  \argmin_{\sigm \in \mathcal{H}\left(\text{div}\right)} E_c\left(\sigm\right) + \mathcal{L}_{\text{PDE}},
 	\end{split}
 	\label{eq:decoupledMixedmini}
 \end{equation}

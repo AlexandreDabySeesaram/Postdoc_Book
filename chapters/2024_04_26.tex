@@ -1,0 +1,69 @@
+ \chapter[The 26$^{\text{th}}$ of April 2024 -2D]{2D \& strategy}
+
+\begin{chapabstract}
+	Meeting report
+\end{chapabstract}
+
+
+\minitoc
+
+\section{Presented results}
+\paragraph{Potential energy}
+In the past two weeks, the primal formulation based on the minimisation of the potential energy has been implemented and shows promising results.
+\begin{itemize}
+	\item The potential energy minimisation in 2D works well \cref{chap:2DPotentialEnergy}
+	\item R-refinement works very well
+	\item Multi scale training helps being more efficient
+	\item Would get better efficiency (Error/Dofs) by using h-adaptivity
+	\begin{itemize}
+		\item Local element-wise refinement is not convincing
+		\item Multi-element refinement seems promising
+		\begin{itemize}
+			\item Needs some regularisation 
+			\item And/or maximum sub-refinement for a given element
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Mixed formulation}
+The implementation of the mixed formulation as well as our understanding of it improved significantly.
+\begin{itemize}
+	\item Playing on the weights of the two terms in the loss helps improving the displacement or the stress
+	\item Fixes in the technical implementation
+	\item \cref{chap:2DPotentialEnergy} shows a better understanding of the quantities at stake
+	\begin{itemize}
+		\item There might be something to do with an integral formulation of the terms of the loss as opposed to using the RMSE over sampling points.
+	\end{itemize}
+\end{itemize}
+
+\section{Next TODOs}
+It's time to start working more precisely on the papers and their content
+\begin{itemize}
+	\item Decide on the coarse scale of the papers and their outline
+	\begin{itemize}
+		\item \emph{A priori} two papers are still required 
+		\begin{itemize}
+			\item One focusing on reduced-order modelling
+			\item The other on the implementation, framework and mixed formulation
+			\begin{itemize}
+				\item It could be the best place to talk about h-adaptivity
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	\item Merge parametric work with 2D results (at least potential energy version)
+	\item Try a non-linear problem
+\end{itemize}
+
+\section{Ideas for later}
+\begin{itemize}
+	\item Handling different geometries
+	\begin{itemize}
+		\item For a given topology we can solve an elastic problem where all the boundary are prescribed Dirichlet conditions forcing the reference geometry to conform to a given new geometry. 
+		\item The displacement field (even coarsely converged) would be the mapping from one reference geometry to a new geometry
+		\item With the \textsc{pytorch} tool that mapping would still allow using autodifferenciating tools
+	\end{itemize}
+	\item Use a different optimizer for the nodes coordinates
+	\begin{itemize}
+		\item Have a different quantity to optimize for the mesh than the total energy
+	\end{itemize}
+\end{itemize}
