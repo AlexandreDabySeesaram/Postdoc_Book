@@ -8,13 +8,63 @@
 \minitoc
 
 \section{Proper residual}
-
+\subsection{Idea}
 When assessing the loss residual on the continuous interpolated solution, the discretisation error pollutes the loss term. It can thus be interesting to remove its contribution to the loss by restricting the test functions to functions living in the space spanned by the shape functions used for the FE interpolation.
 
 The objective is therefore to minimise the residual
 \begin{equation}
-	\mathcal{R} = - \int_{\Omega} \eps\left(\vect{u}\right):\ftensor{K}:\vect{u^*} \d \Omega + \int_{\Omega} \vect{f}\cdot \vect{u^*}\d \Omega, \forall \vect{u^* \in \text{Span}\left(\left\{N_i\left(\vect{x}\right)\right\}_{i\in \llbracket 1,n \rrbracket}\right)}
+	\mathcal{R} = - \int_{\Omega} \eps\left(\vect{u}\right):\ftensor{K}:\eps\left(\vect{u^*}\right) \d \Omega + \int_{\Omega} \vect{f}\cdot \vect{u^*}\d \Omega, \forall \vect{u^*} \in \left( \text{Span}\left(\left\{N_i\left(\vect{x}\right)\right\}_{i\in \llbracket 1,n \rrbracket}\right) \cap \mathcal{H}_0^1\left(\Omega\right)\right)
 \end{equation}
+
+\subsection{Results}
+
+To achieve such a goal the loss has been implemented as the sum of all squared residuals associated to each shape function
+\begin{equation}
+	\mathcal{L} = \sum_{i = 1}^{N}  \left( \mathcal{R}_i \right)^2, 
+\end{equation}
+with $\mathcal{R}_i =  - \int_{\Omega} \eps\left(\vect{u}\right):\ftensor{K}: N_i\left(\vect{x}\right) \d \Omega + \int_{\Omega} \vect{f}\cdot N_i\left(\vect{x}\right)\d \Omega$.
+
+The convergence process goes to low values of the loss but requires a high number of iterations using the standard ADAM as shown in \cref{fig:ConvergenceResidual_2D}.
+
+\begin{figure}
+	\begin{subfigure}[t]{0.5\linewidth}
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Loss_residual_ADAM_square.pdf}
+	\caption{Loss decrease - Adam, $N = 138$}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_residual_ADAM_square_finerMesh.pdf}
+	\caption{Loss decrease - Adam, $N = 366$}
+	\end{subfigure}  
+		\begin{subfigure}[t]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Figures/Loss_residual_ADAM_square_MuchfinerMesh.pdf}
+		\caption{Loss decrease - Adam, $N = 1166$} 
+	\end{subfigure}  
+	\caption{Residual loss decrease  for two meshes}
+	\label{fig:ConvergenceResidual_2D}
+\end{figure}
+
+\begin{figure}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\captionsetup{skip=-10pt} % local setting for this subfigure
+		\centering
+		\input{Figures/test.tex}
+		\caption{Loss decrease - Adam, $N = 138$}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.45\textwidth}
+		\captionsetup{skip=-10pt} % local setting for this subfigure
+		\centering
+		\input{Figures/test_csv.tex}
+		\caption{Loss decrease - Adam, $N = 366$}
+	\end{subfigure}  
+	\caption{Residual loss decrease  for two meshes}
+\end{figure}
+
+\Rq{The implementation seems to work, standard optimizers seem to allow reaching convergence. However the convergence process is very slow and each epoch is much less efficient compared to the standard integral loss.}{Maybe should alternate or hybridise both loss to get a more efficient training strategy while relying on the ``error indicator''given by the residual loss term.}
+
 
 \section{Parametrisation}
 
@@ -50,4 +100,9 @@ with $\vect{\phi} $ the morphing between the scanned geometry and the nominal lu
 
 \Rq{Put only a binary classification of stifness regions in the lattent space and keep the stifness value in the explicit parametrisation.}
 
-\Rq{Does it make sens to train directly the fully parametrised architecture instead of first training the autoencoder and then the HiDeNN-PGD?}
+\Rq{Does it make sens to train directly the fully parametrised architecture instead of first training the autoencoder and then the HiDeNN-PGD? \emph{i.e.} Would it help extracting features that are mechanically relevant ? (remove the amplitude information for instance that is usless in the region classification task if regions are then affected explicitly a given stiffness.)}
+
+
+
+
+

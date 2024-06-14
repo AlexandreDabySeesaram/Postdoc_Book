@@ -1,6 +1,11 @@
 \usepackage{subcaption}
 % % Tikz (and externalization (in a subdir of build))
-\usepackage{tikz}
+\usepackage{tikz,pgfplots}
+\DeclareUnicodeCharacter{2212}{−}
+\usepgfplotslibrary{groupplots,dateplot}
+\usetikzlibrary{patterns,shapes.arrows}
+\pgfplotsset{compat=newest}
+\newcommand{\mathdefault}[1][]{}
 \usetikzlibrary{shapes,arrows,arrows.meta,shapes.multipart,positioning,math,matrix,shadows,decorations}
 \usepackage{wrapfig}
 % \usepackage{microtype}
